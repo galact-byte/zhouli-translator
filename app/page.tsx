@@ -1092,7 +1092,17 @@ export default function Home() {
           </span>
         </div>
         <p>本工具用于语言娱乐与文化创作，生成内容请自行判断与核实。</p>
-        <span>周礼试行本 · 二〇二六</span>
+        <div className="footer-right">
+          <span>周礼试行本 · 二〇二六</span>
+          <a
+            href="https://github.com/Aspirin0000"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Aspirin0000 GitHub"
+          >
+            github.com/Aspirin0000
+          </a>
+        </div>
       </footer>
     </main>
   );
