@@ -64,6 +64,32 @@ MAX_OUTPUT_TOKENS=720
 
 ## 部署
 
+### Cloudflare Workers
+
+这个项目有 `/api/translate` 服务端接口，推荐用 Cloudflare Workers + OpenNext 部署，而不是只部署静态页面。
+
+首次部署：
+
+```bash
+npm install
+npx wrangler login
+npx wrangler secret put DEEPSEEK_API_KEY
+npm run deploy
+```
+
+部署成功后会得到一个 `workers.dev` 公网地址。Cloudflare 官方也建议生产环境优先绑定自定义域名，而不是长期只使用 `workers.dev`。
+
+本地预览 Workers 运行时：
+
+```bash
+cp .env.example .dev.vars
+npm run preview
+```
+
+注意不要把真实 `DEEPSEEK_API_KEY` 提交到 Git；生产环境使用 `wrangler secret put` 写入 Cloudflare Secret。
+
+如果主要用户来自中国大陆普通网络，Cloudflare 可以作为快速上线验证版，但访问速度和稳定性不能保证。更稳的大陆正式版通常需要国内云服务与域名备案；Cloudflare China Network 则需要 Enterprise、ICP 备案/许可和内容审核。
+
 ### Vercel
 
 1. 将项目推送至 GitHub。
