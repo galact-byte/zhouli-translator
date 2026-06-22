@@ -103,11 +103,56 @@ function Icon({
   );
 }
 
+function createClientId() {
+  const cryptoObject = globalThis.crypto;
+
+  if (typeof cryptoObject?.randomUUID === "function") {
+    return cryptoObject.randomUUID();
+  }
+
+  if (typeof cryptoObject?.getRandomValues === "function") {
+    const bytes = new Uint8Array(16);
+    cryptoObject.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (byte) =>
+      byte.toString(16).padStart(2, "0"),
+    ).join("");
+    return [
+      hex.slice(0, 8),
+      hex.slice(8, 12),
+      hex.slice(12, 16),
+      hex.slice(16, 20),
+      hex.slice(20),
+    ].join("-");
+  }
+
+  return [
+    "zhouli",
+    Date.now().toString(36),
+    Math.random().toString(36).slice(2),
+    Math.random().toString(36).slice(2),
+  ].join("-");
+}
+
 function getClientId() {
-  const existing = window.localStorage.getItem("zhouli-client-id");
-  if (existing) return existing;
-  const created = crypto.randomUUID();
-  window.localStorage.setItem("zhouli-client-id", created);
+  const storageKey = "zhouli-client-id";
+
+  try {
+    const existing = window.localStorage.getItem(storageKey);
+    if (existing) return existing;
+  } catch {
+    // Some embedded browsers or privacy modes block localStorage access.
+  }
+
+  const created = createClientId();
+
+  try {
+    window.localStorage.setItem(storageKey, created);
+  } catch {
+    // The ID is only used for soft rate limiting; a per-request fallback is OK.
+  }
+
   return created;
 }
 
