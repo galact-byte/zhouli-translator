@@ -626,7 +626,7 @@ export default function Home() {
       <section className="hero" id="top">
         <div className="hero-kicker">
           <span />
-          研究百段高赞评论而成
+          兼研百段热评与古代典籍译文
           <span />
         </div>
         <h1>
@@ -635,9 +635,9 @@ export default function Home() {
           <em>说得有礼有据</em>
         </h1>
         <p className="hero-copy">
-          现代白话为骨，古代典故为证。
+          现代白话为骨，典籍译文为法。
           <br />
-          输入一句话，请大儒替你重新讲个道理。
+          输入一句话，请大儒替你讲得有礼有据。
         </p>
         <a className="hero-cta" href="#translator">
           入席问礼
@@ -1049,12 +1049,13 @@ export default function Home() {
         </div>
         <div>
           <span className="eyebrow">缘起</span>
-          <h2>从一百个视频的评论区里，重新学会说话。</h2>
+          <h2>从一百个视频的评论区，也从古代典籍的译文里，重新学会说话。</h2>
         </div>
         <p>
-          我们观察了“大周礼时代”近期一百个相关视频中的高赞评论：
-          真正受欢迎的不是晦涩古文，而是人人都能听懂的白话翻译腔。
-          这个工具保留那份一本正经的幽默，也尽量让每个典故有来处、每个道理听得懂。
+          我们观察了“大周礼时代”近期一百个相关视频中的高赞评论，
+          也参考《周礼》《论语》《孟子》《出师表》《桃花源记》等常见篇目的白话译文：
+          真正受欢迎的不是晦涩古文，而是那种曾在课文旁边见过的翻译腔。
+          这个工具保留那份一本正经的幽默，也尽量让每个名分有来处、每个道理听得懂。
         </p>
       </section>
 
