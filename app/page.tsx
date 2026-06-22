@@ -48,7 +48,7 @@ const levels: Array<{
 
 const examples = [
   "朋友借钱久不还，我想催他又不想失了体面",
-  "同事把锅甩给我，我该如何有礼有据地回他",
+  "疯狂星期四，谁愿请我一食才合乎周礼",
   "老板说年轻人要多吃苦，我该怎样温言相劝",
   "NiKo十年终夺冠，这事怎么夸才合乎周礼",
 ];
@@ -323,7 +323,7 @@ export default function Home() {
   async function copySkillPrompt() {
     if (
       await writeClipboard(
-        "使用 $speak-zhouli，把“同事把锅甩给我，我该如何有礼有据地回他”改写成温言相劝的成礼。",
+        "使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”改写成强行圆场的小礼。",
       )
     ) {
       setSkillCopied(true);
@@ -788,7 +788,7 @@ export default function Home() {
                 setText(event.target.value.slice(0, 300));
                 setError("");
               }}
-              placeholder="例如：同事把锅甩给我，我该如何有礼有据地回他……"
+              placeholder="例如：疯狂星期四，谁愿请我一食才合乎周礼……"
               aria-label="输入需要翻译的原话"
               maxLength={300}
             />
@@ -1064,8 +1064,8 @@ export default function Home() {
                   <h4>在对话中点名使用</h4>
                   <div className="prompt-example">
                     <p>
-                      使用 $speak-zhouli，把“同事把锅甩给我，我该如何有礼有据地回他”
-                      改写成温言相劝的成礼。
+                      使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”
+                      改写成强行圆场的小礼。
                     </p>
                     <button type="button" onClick={copySkillPrompt}>
                       <Icon name={skillCopied ? "check" : "copy"} />
