@@ -4,6 +4,16 @@
   "workers_dev": true,
   "preview_urls": true,
   "main": ".open-next/worker.js",
+  "routes": [
+    {
+      "pattern": "hehuzhouli.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.hehuzhouli.com",
+      "custom_domain": true
+    }
+  ],
   "compatibility_date": "2026-06-22",
   "compatibility_flags": [
     "nodejs_compat",
