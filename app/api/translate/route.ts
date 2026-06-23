@@ -176,6 +176,47 @@ function cleanGeneratedText(value: string) {
     .trim();
 }
 
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function fetchDeepSeekWithRetry(
+  apiKey: string,
+  body: Record<string, unknown>,
+) {
+  const retryDelays = [800];
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= retryDelays.length; attempt += 1) {
+    try {
+      const response = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(45_000),
+      });
+
+      if (response.ok || response.status < 500 || attempt >= retryDelays.length) {
+        return response;
+      }
+    } catch (error) {
+      lastError = error;
+      if (attempt >= retryDelays.length) {
+        throw error;
+      }
+    }
+
+    await wait(retryDelays[attempt]);
+  }
+
+  throw lastError;
+}
+
 export async function POST(request: NextRequest) {
   const key = getClientKey(request);
   const rate = checkRateLimit(key);
@@ -245,13 +286,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const response = await fetch("https://api.deepseek.com/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const response = await fetchDeepSeekWithRetry(apiKey, {
         model: process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
@@ -261,8 +296,6 @@ export async function POST(request: NextRequest) {
         temperature: 0.9,
         stream: false,
         thinking: { type: "disabled" },
-      }),
-      signal: AbortSignal.timeout(45_000),
     });
 
     const data = await response.json();

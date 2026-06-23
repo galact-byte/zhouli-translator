@@ -187,6 +187,81 @@ async function writeClipboard(value: string) {
   return copied;
 }
 
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
+function isRetryableFetchError(error: unknown) {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return true;
+  }
+
+  if (error instanceof TypeError) {
+    return true;
+  }
+
+  const message =
+    error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  return /load failed|failed to fetch|network|fetch/i.test(message);
+}
+
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs: number,
+) {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+async function fetchTranslateWithRetry(
+  payload: {
+    text: string;
+    mode: ZhouliMode;
+    level: ZhouliLevel;
+  },
+  clientId: string,
+) {
+  const retryDelays = [700, 1600];
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= retryDelays.length; attempt += 1) {
+    try {
+      return await fetchWithTimeout(
+        "/api/translate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-client-id": clientId,
+          },
+          body: JSON.stringify(payload),
+        },
+        60_000,
+      );
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableFetchError(error) || attempt >= retryDelays.length) {
+        break;
+      }
+      await wait(retryDelays[attempt]);
+    }
+  }
+
+  throw lastError;
+}
+
 export default function Home() {
   const [text, setText] = useState("");
   const [mode, setMode] = useState<ZhouliMode>("gentle");
@@ -280,14 +355,10 @@ export default function Home() {
     setCopied(false);
 
     try {
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": getClientId(),
-        },
-        body: JSON.stringify({ text: text.trim(), mode, level }),
-      });
+      const response = await fetchTranslateWithRetry(
+        { text: text.trim(), mode, level },
+        getClientId(),
+      );
 
       const data = await response.json();
       updateRateInfo(data);
@@ -303,9 +374,11 @@ export default function Home() {
       }, 100);
     } catch (requestError) {
       setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "礼官暂未回应，请稍后再试。",
+        isRetryableFetchError(requestError)
+          ? "网络一时失礼，已替你重试仍未成，请稍后再点一次。"
+          : requestError instanceof Error
+            ? requestError.message
+            : "礼官暂未回应，请稍后再试。",
       );
     } finally {
       setLoading(false);
