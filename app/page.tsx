@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { buildCardDownloadFilename } from "@/lib/cardDownload";
 import type { ZhouliLevel, ZhouliMode } from "@/lib/prompt";
 
 const modes: Array<{
@@ -772,7 +773,7 @@ export default function Home() {
     ctx.fillText("生成之文，可入席陈说", footerSealX - 28, height - 74);
 
     const link = document.createElement("a");
-    link.download = "合乎周礼.png";
+    link.download = buildCardDownloadFilename(levelTitle, new Date(), result);
     link.href = canvas.toDataURL("image/png");
     link.click();
   }
@@ -1025,8 +1026,10 @@ export default function Home() {
                   <span>{isDemo ? "本地演示 · 配置 API 后启用大模型" : "DeepSeek 大儒已阅"}</span>
                   {remaining !== null && (
                     <span>
-                      本轮尚可问礼 {remaining} 次
-                      {dailyRemaining !== null ? ` · 今日余 ${dailyRemaining} 次` : ""}
+                      近10分钟还可问礼 {remaining} 次
+                      {dailyRemaining !== null
+                        ? ` · 今日还可问 ${dailyRemaining} 次`
+                        : ""}
                       {retryAfterSeconds !== null
                         ? ` · 约 ${Math.ceil(retryAfterSeconds / 60)} 分钟后再问`
                         : ""}
