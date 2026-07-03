@@ -1,8 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const baselinePath =
-  process.argv[2] ?? "test-runs/zhouli-100-2026-06-22T06-34-06-771Z.json";
+const baselinePath = process.argv[2] ?? "scripts/zhouli-batch-sample.json";
 const endpoint = process.env.ZHOULI_TEST_ENDPOINT ?? "http://localhost:3000/api/translate";
 
 const baseline = JSON.parse(await fs.readFile(baselinePath, "utf8"));

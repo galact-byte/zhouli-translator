@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildCardDownloadFilename } from "../lib/cardDownload";
+import { buildCardDownloadFilename } from "../lib/cardDownload.ts";
 
 test("builds distinct card download filenames for repeated exports", () => {
   const first = buildCardDownloadFilename(

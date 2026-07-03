@@ -1,12 +1,24 @@
 {
   "name": "zhouli-translator",
   "version": "0.1.0",
-  "private": true,
+  "description": "把寻常的话翻译成合乎周礼的白话翻译腔网站与 Skill 包。",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aspirin0000/zhouli-translator.git"
+  },
+  "homepage": "https://hehuzhouli.com",
+  "bugs": {
+    "url": "https://github.com/Aspirin0000/zhouli-translator/issues"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "node --test scripts/*.test.ts",
     "typecheck": "tsc --noEmit",
+    "public:audit": "node scripts/public-audit.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
