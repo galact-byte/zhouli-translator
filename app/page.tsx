@@ -55,7 +55,7 @@ const examples = [
 ];
 
 const originalVideoUrl =
-  "https://www.bilibili.com/video/BV12a7N6qE1g/?share_source=copy_web&vd_source=d792c5c82b0df6f527fe842ecd9dde6c";
+  "https://www.bilibili.com/video/BV12a7N6qE1g/";
 const githubUrl = "https://github.com/Aspirin0000/zhouli-translator";
 
 const loadingLines = [
