@@ -1,7 +1,7 @@
 # Open Source Readiness
 
 This repository is prepared for public release, but changing GitHub visibility
-is a separate manual step.
+is a separate maintainer action.
 
 ## Public Release Boundary
 
@@ -39,13 +39,5 @@ Expected state:
 - `npm run public:audit` reports no obvious secrets in tracked text files.
 - Tests, typecheck, and build pass.
 - `git status --short` is clean after committing.
-- GitHub repository visibility is still private until you explicitly change it.
-
-## Suggested Announcement
-
-```text
-可以，仓库已经整理成可公开状态。
-前端、生成逻辑、提示词结构和 Skill 都会放出来，方便大家学习和复现。
-真实 API Key、线上账号配置和私有日志不会公开。
-如果这个项目帮到你，欢迎给原视频和 GitHub 仓库点个赞或 Star。
-```
+- GitHub repository visibility is still private until a maintainer explicitly
+  changes it.
