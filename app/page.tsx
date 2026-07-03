@@ -56,7 +56,7 @@ const examples = [
 
 const originalVideoUrl =
   "https://www.bilibili.com/video/BV12a7N6qE1g/?share_source=copy_web&vd_source=d792c5c82b0df6f527fe842ecd9dde6c";
-const githubUrl = "https://github.com/Aspirin0000";
+const githubUrl = "https://github.com/Aspirin0000/zhouli-translator";
 
 const loadingLines = [
   "正在正衣冠，辨名分",
@@ -1271,7 +1271,7 @@ export default function Home() {
           <p className="footer-sponsor">礼席虚位，以待良朋。合作可循原视频寻制礼者。</p>
         </div>
         <div className="footer-right">
-          <span>制礼者 Aspirin0000 · 二〇二六</span>
+          <span>原网站作者 Aspirin0000 · 二〇二六</span>
           <a
             href={originalVideoUrl}
             target="_blank"
@@ -1284,9 +1284,9 @@ export default function Home() {
             href={githubUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label="Aspirin0000 GitHub"
+            aria-label="合乎周礼官方 GitHub 仓库"
           >
-            github.com/Aspirin0000
+            官方开源仓库
           </a>
         </div>
       </footer>

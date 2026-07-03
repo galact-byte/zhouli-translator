@@ -16,6 +16,8 @@
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-black">
+  <img alt="Official" src="https://img.shields.io/badge/official-hehuzhouli.com-8b1e1e">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Aspirin0000/zhouli-translator?style=flat&logo=github">
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black">
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca">
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178c6">
@@ -31,6 +33,10 @@
 面里一本正经地论证。
 
 在线版本：[hehuzhouli.com](https://hehuzhouli.com)
+
+这是 [hehuzhouli.com](https://hehuzhouli.com) 原网站作者维护的官方开源仓库。
+若你是从视频、网页、转载或镜像项目来到这里，这里就是原版网站对应的源码与
+Skill 发布处。
 
 这个仓库包含：
 
@@ -53,6 +59,16 @@
 | Skill 分发 | 支持一键复制 Skill 全文和 ZIP 下载 |
 | 图片礼帖 | 将生成结果保存为适合传播的图片 |
 | 公开前审计 | 内置脚本扫描明显密钥与私钥块 |
+
+## Star History
+
+<a href="https://star-history.com/#Aspirin0000/zhouli-translator&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Aspirin0000/zhouli-translator&type=Date&theme=dark">
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Aspirin0000/zhouli-translator&type=Date">
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Aspirin0000/zhouli-translator&type=Date">
+  </picture>
+</a>
 
 ## Example
 
