@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
+  <title id="title">GitHub Star History for Aspirin0000/zhouli-translator</title>
+  <desc id="desc">Aspirin0000/zhouli-translator has 47 GitHub stars. Chart generated from public GitHub stargazer timestamps.</desc>
+  <defs>
+    <linearGradient id="line" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#8b1e1e"/>
+      <stop offset="55%" stop-color="#d94b39"/>
+      <stop offset="100%" stop-color="#f38020"/>
+    </linearGradient>
+    <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#d94b39" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#d94b39" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#3b2a20" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="920" height="520" rx="18" fill="#fffaf0"/>
+  <rect x="18" y="18" width="884" height="484" rx="15" fill="#ffffff" stroke="#eadcc6" filter="url(#shadow)"/>
+  <text x="72" y="50" fill="#211d18" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="24" font-weight="700">GitHub Star History</text>
+  <text x="72" y="74" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="13">Aspirin0000/zhouli-translator · 47 stars · updated 2026-07-05 03:42 CST</text>
+  <line x1="72" y1="442.00" x2="878" y2="442.00" stroke="#efe5d5"/>
+  <text x="58" y="446.00" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">0</text>
+  <line x1="72" y1="369.20" x2="878" y2="369.20" stroke="#efe5d5"/>
+  <text x="58" y="373.20" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">10</text>
+  <line x1="72" y1="296.40" x2="878" y2="296.40" stroke="#efe5d5"/>
+  <text x="58" y="300.40" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">20</text>
+  <line x1="72" y1="223.60" x2="878" y2="223.60" stroke="#efe5d5"/>
+  <text x="58" y="227.60" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">30</text>
+  <line x1="72" y1="150.80" x2="878" y2="150.80" stroke="#efe5d5"/>
+  <text x="58" y="154.80" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">40</text>
+  <line x1="72" y1="78.00" x2="878" y2="78.00" stroke="#efe5d5"/>
+  <text x="58" y="82.00" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">50</text>
+  <line x1="72.00" y1="78" x2="72.00" y2="442" stroke="#f4eadb"/>
+  <text x="72.00" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 02:14</text>
+  <line x1="273.50" y1="78" x2="273.50" y2="442" stroke="#f4eadb"/>
+  <text x="273.50" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 08:36</text>
+  <line x1="475.00" y1="78" x2="475.00" y2="442" stroke="#f4eadb"/>
+  <text x="475.00" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 14:58</text>
+  <line x1="676.50" y1="78" x2="676.50" y2="442" stroke="#f4eadb"/>
+  <text x="676.50" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 21:20</text>
+  <line x1="878.00" y1="78" x2="878.00" y2="442" stroke="#f4eadb"/>
+  <text x="878.00" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-05 03:42</text>
+  <line x1="72" y1="442" x2="878" y2="442" stroke="#6c5840" stroke-width="1.4"/>
+  <line x1="72" y1="78" x2="72" y2="442" stroke="#6c5840" stroke-width="1.4"/>
+  <polygon points="72.00,442.00 72.00,442.00 135.31,434.72 191.67,427.44 211.19,420.16 267.43,412.88 273.27,405.60 274.01,398.32 283.77,391.04 315.77,383.76 338.58,376.48 339.65,369.20 348.33,361.92 368.98,354.64 374.08,347.36 386.52,340.08 414.62,332.80 429.94,325.52 433.89,318.24 437.98,310.96 450.85,303.68 456.33,296.40 468.25,289.12 474.84,281.84 476.26,274.56 478.38,267.28 511.02,260.00 512.44,252.72 517.02,245.44 527.77,238.16 555.83,230.88 559.89,223.60 582.62,216.32 596.92,209.04 615.11,201.76 615.40,194.48 630.78,187.20 645.26,179.92 667.47,172.64 667.58,165.36 675.75,158.08 686.22,150.80 692.49,143.52 703.15,136.24 705.52,128.96 754.22,121.68 761.46,114.40 776.98,107.12 790.48,99.84 878.00,99.84 878.00,442.00" fill="url(#area)"/>
+  <polyline points="72.00,442.00 135.31,434.72 191.67,427.44 211.19,420.16 267.43,412.88 273.27,405.60 274.01,398.32 283.77,391.04 315.77,383.76 338.58,376.48 339.65,369.20 348.33,361.92 368.98,354.64 374.08,347.36 386.52,340.08 414.62,332.80 429.94,325.52 433.89,318.24 437.98,310.96 450.85,303.68 456.33,296.40 468.25,289.12 474.84,281.84 476.26,274.56 478.38,267.28 511.02,260.00 512.44,252.72 517.02,245.44 527.77,238.16 555.83,230.88 559.89,223.60 582.62,216.32 596.92,209.04 615.11,201.76 615.40,194.48 630.78,187.20 645.26,179.92 667.47,172.64 667.58,165.36 675.75,158.08 686.22,150.80 692.49,143.52 703.15,136.24 705.52,128.96 754.22,121.68 761.46,114.40 776.98,107.12 790.48,99.84 878.00,99.84" fill="none" stroke="url(#line)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="790.48" cy="99.84" r="6" fill="#f38020" stroke="#ffffff" stroke-width="3"/>
+  <text x="878" y="54" text-anchor="end" fill="#8b1e1e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="40" font-weight="800">47</text>
+  <text x="878" y="76" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="13">stars</text>
+  <text x="460" y="506" text-anchor="middle" fill="#a6947d" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="11">Generated from public GitHub stargazer timestamps</text>
+</svg>

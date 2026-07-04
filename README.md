@@ -61,6 +61,12 @@ Skill 发布处。
 | 图片礼帖 | 将生成结果保存为适合传播的图片 |
 | 公开前审计 | 内置脚本扫描明显密钥与私钥块 |
 
+## Star History
+
+<a href="https://github.com/Aspirin0000/zhouli-translator/stargazers">
+  <img alt="GitHub Star History" src="public/images/github-star-history.svg">
+</a>
+
 ## Example
 
 Input:
@@ -262,7 +268,3 @@ Please run `npm run public:audit`, `npm test`, `npm run typecheck`, and
 ## License
 
 MIT License. See [LICENSE](LICENSE).
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/chart?repos=Aspirin0000/zhouli-translator&type=date&legend=top-left)](https://www.star-history.com/?repos=Aspirin0000%2Fzhouli-translator&type=date&legend=top-left)
