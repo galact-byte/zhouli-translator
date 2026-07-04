@@ -1,52 +1,57 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" role="img" aria-labelledby="title desc">
-  <title id="title">GitHub Star History for Aspirin0000/zhouli-translator</title>
+  <title id="title">诸贤赐星记 for Aspirin0000/zhouli-translator</title>
   <desc id="desc">Aspirin0000/zhouli-translator has 47 GitHub stars. Chart generated from public GitHub stargazer timestamps.</desc>
   <defs>
     <linearGradient id="line" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0%" stop-color="#8b1e1e"/>
-      <stop offset="55%" stop-color="#d94b39"/>
-      <stop offset="100%" stop-color="#f38020"/>
+      <stop offset="0%" stop-color="#7d2017"/>
+      <stop offset="58%" stop-color="#b33426"/>
+      <stop offset="100%" stop-color="#d65a32"/>
     </linearGradient>
     <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0%" stop-color="#d94b39" stop-opacity="0.24"/>
-      <stop offset="100%" stop-color="#d94b39" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#b33426" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#b33426" stop-opacity="0"/>
     </linearGradient>
+    <radialGradient id="paper" cx="45%" cy="18%" r="82%">
+      <stop offset="0%" stop-color="#fff8ea"/>
+      <stop offset="58%" stop-color="#f3e2c4"/>
+      <stop offset="100%" stop-color="#dfc79e"/>
+    </radialGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#3b2a20" flood-opacity="0.14"/>
     </filter>
   </defs>
-  <rect width="920" height="520" rx="18" fill="#fffaf0"/>
-  <rect x="18" y="18" width="884" height="484" rx="15" fill="#ffffff" stroke="#eadcc6" filter="url(#shadow)"/>
-  <text x="72" y="50" fill="#211d18" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="24" font-weight="700">GitHub Star History</text>
-  <text x="72" y="74" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="13">Aspirin0000/zhouli-translator · 47 stars · updated 2026-07-05 03:42 CST</text>
-  <line x1="72" y1="442.00" x2="878" y2="442.00" stroke="#efe5d5"/>
-  <text x="58" y="446.00" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">0</text>
-  <line x1="72" y1="369.20" x2="878" y2="369.20" stroke="#efe5d5"/>
-  <text x="58" y="373.20" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">10</text>
-  <line x1="72" y1="296.40" x2="878" y2="296.40" stroke="#efe5d5"/>
-  <text x="58" y="300.40" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">20</text>
-  <line x1="72" y1="223.60" x2="878" y2="223.60" stroke="#efe5d5"/>
-  <text x="58" y="227.60" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">30</text>
-  <line x1="72" y1="150.80" x2="878" y2="150.80" stroke="#efe5d5"/>
-  <text x="58" y="154.80" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">40</text>
-  <line x1="72" y1="78.00" x2="878" y2="78.00" stroke="#efe5d5"/>
-  <text x="58" y="82.00" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">50</text>
-  <line x1="72.00" y1="78" x2="72.00" y2="442" stroke="#f4eadb"/>
-  <text x="72.00" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 02:14</text>
-  <line x1="273.50" y1="78" x2="273.50" y2="442" stroke="#f4eadb"/>
-  <text x="273.50" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 08:36</text>
-  <line x1="475.00" y1="78" x2="475.00" y2="442" stroke="#f4eadb"/>
-  <text x="475.00" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 14:58</text>
-  <line x1="676.50" y1="78" x2="676.50" y2="442" stroke="#f4eadb"/>
-  <text x="676.50" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-04 21:20</text>
-  <line x1="878.00" y1="78" x2="878.00" y2="442" stroke="#f4eadb"/>
-  <text x="878.00" y="478" text-anchor="middle" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="12">07-05 03:42</text>
-  <line x1="72" y1="442" x2="878" y2="442" stroke="#6c5840" stroke-width="1.4"/>
-  <line x1="72" y1="78" x2="72" y2="442" stroke="#6c5840" stroke-width="1.4"/>
-  <polygon points="72.00,442.00 72.00,442.00 135.31,434.72 191.67,427.44 211.19,420.16 267.43,412.88 273.27,405.60 274.01,398.32 283.77,391.04 315.77,383.76 338.58,376.48 339.65,369.20 348.33,361.92 368.98,354.64 374.08,347.36 386.52,340.08 414.62,332.80 429.94,325.52 433.89,318.24 437.98,310.96 450.85,303.68 456.33,296.40 468.25,289.12 474.84,281.84 476.26,274.56 478.38,267.28 511.02,260.00 512.44,252.72 517.02,245.44 527.77,238.16 555.83,230.88 559.89,223.60 582.62,216.32 596.92,209.04 615.11,201.76 615.40,194.48 630.78,187.20 645.26,179.92 667.47,172.64 667.58,165.36 675.75,158.08 686.22,150.80 692.49,143.52 703.15,136.24 705.52,128.96 754.22,121.68 761.46,114.40 776.98,107.12 790.48,99.84 878.00,99.84 878.00,442.00" fill="url(#area)"/>
-  <polyline points="72.00,442.00 135.31,434.72 191.67,427.44 211.19,420.16 267.43,412.88 273.27,405.60 274.01,398.32 283.77,391.04 315.77,383.76 338.58,376.48 339.65,369.20 348.33,361.92 368.98,354.64 374.08,347.36 386.52,340.08 414.62,332.80 429.94,325.52 433.89,318.24 437.98,310.96 450.85,303.68 456.33,296.40 468.25,289.12 474.84,281.84 476.26,274.56 478.38,267.28 511.02,260.00 512.44,252.72 517.02,245.44 527.77,238.16 555.83,230.88 559.89,223.60 582.62,216.32 596.92,209.04 615.11,201.76 615.40,194.48 630.78,187.20 645.26,179.92 667.47,172.64 667.58,165.36 675.75,158.08 686.22,150.80 692.49,143.52 703.15,136.24 705.52,128.96 754.22,121.68 761.46,114.40 776.98,107.12 790.48,99.84 878.00,99.84" fill="none" stroke="url(#line)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="790.48" cy="99.84" r="6" fill="#f38020" stroke="#ffffff" stroke-width="3"/>
-  <text x="878" y="54" text-anchor="end" fill="#8b1e1e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="40" font-weight="800">47</text>
-  <text x="878" y="76" text-anchor="end" fill="#7a6d5b" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="13">stars</text>
-  <text x="460" y="506" text-anchor="middle" fill="#a6947d" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="11">Generated from public GitHub stargazer timestamps</text>
+  <rect width="920" height="520" rx="18" fill="#f4ead8"/>
+  <rect x="18" y="18" width="884" height="484" rx="12" fill="url(#paper)" stroke="#d8b783" filter="url(#shadow)"/>
+  <rect x="38" y="104" width="844" height="378" fill="none" stroke="#8c6b3f" stroke-opacity="0.42" stroke-width="1.5"/>
+  <rect x="50" y="116" width="820" height="350" fill="none" stroke="#fff7e5" stroke-opacity="0.72"/>
+  <text x="460" y="304" text-anchor="middle" fill="#8c342a" fill-opacity="0.06" font-family="Songti SC, STSong, SimSun, serif" font-size="280" font-weight="700">礼</text>
+  <text x="92" y="58" fill="#211d18" font-family="Songti SC, STSong, SimSun, serif" font-size="34" font-weight="700">诸贤赐星记</text>
+  <text x="92" y="84" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="14.0">Aspirin0000/zhouli-translator · 凡四十七星 · 更新于 二〇二六年七月初五</text>
+  <rect x="812" y="44" width="46" height="46" fill="#9e3228"/>
+  <rect x="820" y="52" width="30" height="30" fill="none" stroke="#f6dfba" stroke-width="1.5"/>
+  <text x="835" y="74" text-anchor="middle" fill="#f6dfba" font-family="Songti SC, STSong, SimSun, serif" font-size="20" font-weight="700">星</text>
+  <text x="60" y="166" text-anchor="middle" fill="#8b1e1e" font-family="Songti SC, STSong, SimSun, serif" font-size="16" writing-mode="vertical-rl">贤星累牍</text>
+  <line x1="120" y1="392.00" x2="802" y2="392.00" stroke="#d9c29e" stroke-opacity="0.48"/>
+  <text x="106" y="396.00" text-anchor="end" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="13">零</text>
+  <line x1="120" y1="338.40" x2="802" y2="338.40" stroke="#d9c29e" stroke-opacity="0.48"/>
+  <text x="106" y="342.40" text-anchor="end" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="13">十</text>
+  <line x1="120" y1="284.80" x2="802" y2="284.80" stroke="#d9c29e" stroke-opacity="0.48"/>
+  <text x="106" y="288.80" text-anchor="end" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="13">二十</text>
+  <line x1="120" y1="231.20" x2="802" y2="231.20" stroke="#d9c29e" stroke-opacity="0.48"/>
+  <text x="106" y="235.20" text-anchor="end" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="13">三十</text>
+  <line x1="120" y1="177.60" x2="802" y2="177.60" stroke="#d9c29e" stroke-opacity="0.48"/>
+  <text x="106" y="181.60" text-anchor="end" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="13">四十</text>
+  <line x1="120" y1="124.00" x2="802" y2="124.00" stroke="#d9c29e" stroke-opacity="0.48"/>
+  <text x="106" y="128.00" text-anchor="end" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="13">五十</text>
+  <line x1="120.00" y1="124" x2="120.00" y2="392" stroke="#ead6b7" stroke-opacity="0.54"/>
+  <text x="120.00" y="446" text-anchor="middle" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="14">七月初四</text>
+  <line x1="697.69" y1="124" x2="697.69" y2="392" stroke="#ead6b7" stroke-opacity="0.54"/>
+  <text x="697.69" y="446" text-anchor="middle" fill="#7a6247" font-family="Songti SC, STSong, SimSun, serif" font-size="14">七月初五</text>
+  <line x1="120" y1="392" x2="802" y2="392" stroke="#6c4f2e" stroke-width="1.6"/>
+  <line x1="120" y1="124" x2="120" y2="392" stroke="#6c4f2e" stroke-width="1.6"/>
+  <polygon points="120.00,392.00 120.00,392.00 173.10,386.64 220.36,381.28 236.73,375.92 283.89,370.56 288.79,365.20 289.42,359.84 297.59,354.48 324.44,349.12 343.56,343.76 344.46,338.40 351.74,333.04 369.06,327.68 373.34,322.32 383.77,316.96 407.33,311.60 420.18,306.24 423.49,300.88 426.92,295.52 437.72,290.16 442.31,284.80 452.31,279.44 457.84,274.08 459.02,268.72 460.81,263.36 488.17,258.00 489.37,252.64 493.21,247.28 502.22,241.92 525.75,236.56 529.16,231.20 548.22,225.84 560.22,220.48 575.47,215.12 575.72,209.76 588.62,204.40 600.75,199.04 619.38,193.68 619.47,188.32 626.32,182.96 635.10,177.60 640.36,172.24 649.31,166.88 651.29,161.52 692.13,156.16 698.21,150.80 711.22,145.44 722.54,140.08 802.00,140.08 802.00,392.00" fill="url(#area)"/>
+  <polyline points="120.00,392.00 173.10,386.64 220.36,381.28 236.73,375.92 283.89,370.56 288.79,365.20 289.42,359.84 297.59,354.48 324.44,349.12 343.56,343.76 344.46,338.40 351.74,333.04 369.06,327.68 373.34,322.32 383.77,316.96 407.33,311.60 420.18,306.24 423.49,300.88 426.92,295.52 437.72,290.16 442.31,284.80 452.31,279.44 457.84,274.08 459.02,268.72 460.81,263.36 488.17,258.00 489.37,252.64 493.21,247.28 502.22,241.92 525.75,236.56 529.16,231.20 548.22,225.84 560.22,220.48 575.47,215.12 575.72,209.76 588.62,204.40 600.75,199.04 619.38,193.68 619.47,188.32 626.32,182.96 635.10,177.60 640.36,172.24 649.31,166.88 651.29,161.52 692.13,156.16 698.21,150.80 711.22,145.44 722.54,140.08 802.00,140.08" fill="none" stroke="#f3d7a2" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0.72"/>
+  <polyline points="120.00,392.00 173.10,386.64 220.36,381.28 236.73,375.92 283.89,370.56 288.79,365.20 289.42,359.84 297.59,354.48 324.44,349.12 343.56,343.76 344.46,338.40 351.74,333.04 369.06,327.68 373.34,322.32 383.77,316.96 407.33,311.60 420.18,306.24 423.49,300.88 426.92,295.52 437.72,290.16 442.31,284.80 452.31,279.44 457.84,274.08 459.02,268.72 460.81,263.36 488.17,258.00 489.37,252.64 493.21,247.28 502.22,241.92 525.75,236.56 529.16,231.20 548.22,225.84 560.22,220.48 575.47,215.12 575.72,209.76 588.62,204.40 600.75,199.04 619.38,193.68 619.47,188.32 626.32,182.96 635.10,177.60 640.36,172.24 649.31,166.88 651.29,161.52 692.13,156.16 698.21,150.80 711.22,145.44 722.54,140.08 802.00,140.08" fill="none" stroke="url(#line)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="722.54" cy="140.08" r="7" fill="#9e3228" stroke="#f7ead1" stroke-width="3"/>
+  <text x="460" y="494" text-anchor="middle" fill="#9b8361" font-family="Songti SC, STSong, SimSun, serif" font-size="12">据 GitHub 公开赐星时刻绘制</text>
 </svg>
