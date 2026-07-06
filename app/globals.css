@@ -641,6 +641,53 @@ main {
   box-shadow: 0 0 0 3px rgba(158, 50, 40, 0.06);
 }
 
+.direction-switch {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  background: rgba(222, 211, 192, 0.42);
+  border: 1px solid var(--line);
+}
+
+.direction-switch button {
+  min-height: 58px;
+  padding: 11px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  transition: 160ms ease;
+}
+
+.direction-switch button:hover {
+  color: var(--red);
+}
+
+.direction-switch button.active {
+  color: var(--white);
+  background: var(--red);
+  box-shadow:
+    inset 0 0 0 4px var(--red),
+    inset 0 0 0 5px rgba(255, 239, 212, 0.24);
+}
+
+.direction-switch strong {
+  font: 600 15px/1 var(--serif);
+  letter-spacing: 0.14em;
+}
+
+.direction-switch small {
+  font: 500 10px/1.35 var(--serif);
+  letter-spacing: 0.04em;
+  opacity: 0.78;
+}
+
 .example-row {
   margin-top: 14px;
   display: flex;
@@ -662,12 +709,16 @@ main {
 }
 
 .example-row button {
+  max-width: 230px;
   padding: 6px 9px;
   cursor: pointer;
   color: var(--ink-soft);
   background: transparent;
   border: 1px solid rgba(73, 59, 42, 0.16);
   font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: 150ms ease;
 }
 
@@ -1982,6 +2033,7 @@ footer > span,
   }
 
   .prompt-example button {
+    min-height: 40px;
     width: fit-content;
   }
 
@@ -2027,6 +2079,17 @@ footer > span,
     margin-bottom: 8px;
   }
 
+  .example-row > div {
+    gap: 9px;
+  }
+
+  .example-row button {
+    max-width: 100%;
+    min-height: 40px;
+    padding: 0 11px;
+    text-align: left;
+  }
+
   .mode-grid {
     grid-template-columns: 1fr;
   }
@@ -2046,6 +2109,7 @@ footer > span,
 
   .level-switch button {
     flex: 1;
+    height: 40px;
   }
 
   .translate-button {
@@ -2072,6 +2136,7 @@ footer > span,
   }
 
   .result-actions button {
+    min-height: 40px;
     flex: 1;
     justify-content: center;
     white-space: nowrap;
@@ -2135,9 +2200,22 @@ footer > span,
     text-align: left;
   }
 
+  .footer-note a {
+    min-width: 44px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
   .footer-right {
     justify-self: start;
     text-align: left;
+  }
+
+  .footer-right a {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
   }
 }
 

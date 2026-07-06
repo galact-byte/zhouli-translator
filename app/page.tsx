@@ -3,7 +3,29 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildCardDownloadFilename } from "@/lib/cardDownload";
-import type { ZhouliLevel, ZhouliMode } from "@/lib/prompt";
+import type {
+  PlainMode,
+  ZhouliDirection,
+  ZhouliLevel,
+  ZhouliMode,
+} from "@/lib/prompt";
+
+const directions: Array<{
+  id: ZhouliDirection;
+  title: string;
+  description: string;
+}> = [
+  {
+    id: "to_zhouli",
+    title: "问礼",
+    description: "白话入席，化成周礼体",
+  },
+  {
+    id: "to_plain",
+    title: "释礼",
+    description: "周礼长文，翻回正常话",
+  },
+];
 
 const modes: Array<{
   id: ZhouliMode;
@@ -37,6 +59,38 @@ const modes: Array<{
   },
 ];
 
+const plainModes: Array<{
+  id: PlainMode;
+  title: string;
+  description: string;
+  mark: string;
+}> = [
+  {
+    id: "direct",
+    title: "直白释义",
+    description: "删去包装，直接说破",
+    mark: "直",
+  },
+  {
+    id: "explain",
+    title: "耐心讲明",
+    description: "表面与真实分开讲",
+    mark: "明",
+  },
+  {
+    id: "subtext",
+    title: "潜台词版",
+    description: "翻出暗示和社交意图",
+    mark: "潜",
+  },
+  {
+    id: "roast",
+    title: "锐评拆穿",
+    description: "拆掉包装，保留分寸",
+    mark: "锐",
+  },
+];
+
 const levels: Array<{
   id: ZhouliLevel;
   title: string;
@@ -47,11 +101,28 @@ const levels: Array<{
   { id: "grand", title: "大礼", description: "层层设喻论证" },
 ];
 
+const plainLevels: Array<{
+  id: ZhouliLevel;
+  title: string;
+  description: string;
+}> = [
+  { id: "light", title: "略释", description: "一句说破" },
+  { id: "standard", title: "明释", description: "两三句讲清" },
+  { id: "grand", title: "详释", description: "分层拆解" },
+];
+
 const examples = [
   "华强买瓜，如何问这瓜保熟吗才合乎周礼",
   "疯狂星期四，谁愿请我一食才合乎周礼",
   "老板说年轻人要多吃苦，我该怎样温言相劝",
   "NiKo十年终夺冠，这事怎么夸才合乎周礼",
+];
+
+const plainExamples = [
+  "我听闻，宴席之上，众人正举杯畅饮时，忽然有人起身谈论起丧礼丧事。这并非那人的话不对，只是时机不当，名分不合。大家可以兴尽而散，却不可因一句不合时宜的话坏了满座的好心情。就像春天里大家正赏花，你忽然说花谢之后便是枯枝，这话虽真，却扫了众人的雅兴。所以，君子说话，要看清场面，分清时候。我明白你是有话要说，但若换一个时机，把这份理讲在大家愿意听的时候，岂不是既不伤人，也不失自己的体面？",
+  "我曾听闻，古时贤人设宴待客，必先派人在门口把守，不是要拒人于门外，而是怕那些不讲礼数的人挤进来，把筵席弄得一片狼藉，让真正赴宴的宾客连坐的地方都没有。如今你做这个网站，特意规定问礼的次数，表面看是设了关卡，细想之下，这不正是效法古人的门吏之责吗？那些滥用脚本、反复闯入的人，好比不请自来的闹客，失了“信”与“节”的本分；而你设下这道礼法，恰是为了保全所有参加者的体面与通畅。这样看来，你虽然拦住了几个人，却护住了整个宴席的秩序，难道不正是接近君子分内的用心吗？",
+  "我听说，从前有个贤人，每逢节令便设宴款待众人，但从不白吃白喝。他常说：“食者，人之大欲，但若无名分，便失了体统。”今日是疯狂星期四，若有人愿请我一食，这便好比当年宴席上，主客之间以礼相待：主家尽慷慨之责，宾客受馈赠之恩，两下里都得了体面。但若无人相请，我自去买了来吃，也不算失礼，毕竟食取于己，名分自足。这样看来，请与不请，都不妨事；只是若有人请了，我便当道一声谢，这难道不就是合乎周礼了吗？",
+  "我听闻，人若见了天上云朵飘过，总是忍不住伸手去够。当年有人看着山间雾气，便想着能踏云而行、乘雾而去，这原是人心对自在逍遥的一点念想。今日我看到这云，心中也生出一种欢喜，仿佛那云里头藏着可以游玩的世界——我听说，那叫原神。可抬头看天，云终究是云，不能真的踏上去；于是我转而想到，既然云能托起我的念想，那云原神，大约就是让人在云上玩耍的意思吧。这样看来，我这般心心念念地想玩，难道不也是合乎礼法的、对自在之心的一次追慕吗？",
 ];
 
 const originalVideoUrl =
@@ -63,6 +134,13 @@ const loadingLines = [
   "正在查阅古代贤者旧事",
   "正在把道理说得似乎很有道理",
   "正在请鲁国大儒作最后裁定",
+];
+
+const plainLoadingLines = [
+  "正在拆去礼法包装",
+  "正在辨认真实意思",
+  "正在把长话说短",
+  "正在翻回正常人话",
 ];
 
 function Icon({
@@ -198,6 +276,11 @@ function wait(ms: number) {
   });
 }
 
+function getExamplePreview(value: string) {
+  const compact = value.replace(/\s+/g, "");
+  return compact.length > 28 ? `${compact.slice(0, 28)}…` : compact;
+}
+
 function isRetryableFetchError(error: unknown) {
   if (error instanceof DOMException && error.name === "AbortError") {
     return true;
@@ -234,7 +317,9 @@ async function fetchTranslateWithRetry(
   payload: {
     text: string;
     mode: ZhouliMode;
+    plainMode: PlainMode;
     level: ZhouliLevel;
+    direction: ZhouliDirection;
   },
   clientId: string,
 ) {
@@ -268,8 +353,10 @@ async function fetchTranslateWithRetry(
 }
 
 export default function Home() {
+  const [direction, setDirection] = useState<ZhouliDirection>("to_zhouli");
   const [text, setText] = useState("");
   const [mode, setMode] = useState<ZhouliMode>("gentle");
+  const [plainMode, setPlainMode] = useState<PlainMode>("direct");
   const [level, setLevel] = useState<ZhouliLevel>("standard");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
@@ -291,14 +378,28 @@ export default function Home() {
     () => modes.find((item) => item.id === mode) ?? modes[0],
     [mode],
   );
+  const selectedDirection = useMemo(
+    () => directions.find((item) => item.id === direction) ?? directions[0],
+    [direction],
+  );
+  const selectedPlainMode = useMemo(
+    () => plainModes.find((item) => item.id === plainMode) ?? plainModes[0],
+    [plainMode],
+  );
+  const isPlainDirection = direction === "to_plain";
+  const inputLimit = isPlainDirection ? 900 : 300;
+  const activeExamples = isPlainDirection ? plainExamples : examples;
+  const activeLoadingLines = isPlainDirection ? plainLoadingLines : loadingLines;
+  const activeLevels = isPlainDirection ? plainLevels : levels;
+  const activeDirectionVerb = isPlainDirection ? "释礼" : "问礼";
 
   useEffect(() => {
     if (!loading) return;
     const timer = window.setInterval(() => {
-      setLoadingIndex((current) => (current + 1) % loadingLines.length);
+      setLoadingIndex((current) => (current + 1) % activeLoadingLines.length);
     }, 1300);
     return () => window.clearInterval(timer);
-  }, [loading]);
+  }, [activeLoadingLines.length, loading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -369,7 +470,9 @@ export default function Home() {
     }
 
     if (response.status === 429) {
-      return "问礼太急，礼门暂闭，请稍后再来。";
+      return isPlainDirection
+        ? "释礼太急，礼门暂闭，请稍后再来。"
+        : "问礼太急，礼门暂闭，请稍后再来。";
     }
 
     if (response.status === 403) {
@@ -388,7 +491,7 @@ export default function Home() {
 
     try {
       const response = await fetchTranslateWithRetry(
-        { text: text.trim(), mode, level },
+        { text: text.trim(), mode, plainMode, level, direction },
         getClientId(),
       );
 
@@ -428,11 +531,11 @@ export default function Home() {
   }
 
   async function copySkillPrompt() {
-    if (
-      await writeClipboard(
-        "使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”改写成强行圆场的小礼。",
-      )
-    ) {
+	    if (
+	      await writeClipboard(
+	        "使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”改写成强行圆场的小礼；或把一段周礼体释礼，翻回直接人话。",
+	      )
+	    ) {
       setSkillCopied(true);
       window.setTimeout(() => setSkillCopied(false), 1800);
     }
@@ -446,11 +549,11 @@ export default function Home() {
         throw new Error("Skill 原文还在请出礼库，请稍候再点一次。");
       }
 
-      const chatReadyText = [
-        "请把下面这份 Markdown 当作一个 AI Skill 使用。之后我发给你的中文，都按这份 Skill 改写成合乎周礼的话；除非我要求解释，否则只输出改写结果。",
-        "",
-        skillFullText.trim(),
-      ].join("\n");
+	      const chatReadyText = [
+	        "请把下面这份 Markdown 当作一个 AI Skill 使用。之后我发给你的中文，都按这份 Skill 问礼或释礼；除非我要求解释，否则只输出改写或释义结果。",
+	        "",
+	        skillFullText.trim(),
+	      ].join("\n");
 
       if (!(await writeClipboard(chatReadyText))) {
         throw new Error("浏览器暂未允许自动复制。");
@@ -525,7 +628,16 @@ export default function Home() {
     if (!canvasContext) return;
     const ctx: CanvasRenderingContext2D = canvasContext;
 
-    const levelTitle = levels.find((item) => item.id === level)?.title ?? "成礼";
+    const levelTitle = activeLevels.find((item) => item.id === level)?.title ?? "成礼";
+    const cardStyleTitle = isPlainDirection ? selectedPlainMode.title : selectedMode.title;
+    const cardMainTitle = isPlainDirection ? "释礼还意" : "言之成礼";
+    const cardSubTitle = isPlainDirection
+      ? "把周礼体翻回直接人话"
+      : "把寻常的话，说得有礼有据";
+    const cardMetaLabel = isPlainDirection ? "释法" : "礼制";
+    const cardFooterTitle = isPlainDirection ? "合乎周礼 · 释礼署录" : "合乎周礼 · 礼官署录";
+    const cardFooterNote = isPlainDirection ? "释出之意，可照常言说" : "生成之文，可入席陈说";
+    const cardDownloadTitle = isPlainDirection ? `释礼-${levelTitle}` : `问礼-${levelTitle}`;
 
     function drawPaperGrain() {
       ctx.save();
@@ -679,7 +791,7 @@ export default function Home() {
     ctx.fillText("合乎周礼", 238, 137);
     ctx.fillStyle = "#7c6d59";
     ctx.font = '26px "Songti SC", "STSong", serif';
-    ctx.fillText("把寻常的话，说得有礼有据", 242, 183);
+    ctx.fillText(cardSubTitle, 242, 183);
     ctx.fillStyle = "rgba(136, 48, 39, 0.86)";
     ctx.font = '600 15px "PingFang SC", sans-serif';
     ctx.letterSpacing = "0.12em";
@@ -687,7 +799,7 @@ export default function Home() {
     ctx.letterSpacing = "0";
 
     drawVerticalText(
-      "言之成礼",
+      cardMainTitle,
       width - 124,
       92,
       34,
@@ -757,10 +869,10 @@ export default function Home() {
     ctx.fillStyle = "#9e3228";
     ctx.font = '600 25px "Songti SC", serif';
     ctx.textAlign = "left";
-    ctx.fillText(`礼制 · ${selectedMode.title} · ${levelTitle}`, 112, height - 118);
+    ctx.fillText(`${cardMetaLabel} · ${cardStyleTitle} · ${levelTitle}`, 112, height - 118);
     ctx.fillStyle = "#7a6d5b";
     ctx.font = '22px "Songti SC", serif';
-    ctx.fillText("一言既出，众贤共阅", 112, height - 80);
+    ctx.fillText(isPlainDirection ? "礼文既释，原意可明" : "一言既出，众贤共阅", 112, height - 80);
 
     const footerSealSize = 66;
     const footerSealX = width - 176;
@@ -768,12 +880,12 @@ export default function Home() {
     ctx.textAlign = "right";
     ctx.fillStyle = "#7a6d5b";
     ctx.font = '22px "Songti SC", serif';
-    ctx.fillText("合乎周礼 · 礼官署录", footerSealX - 28, height - 101);
+    ctx.fillText(cardFooterTitle, footerSealX - 28, height - 101);
     ctx.font = '15px "PingFang SC", sans-serif';
-    ctx.fillText("生成之文，可入席陈说", footerSealX - 28, height - 74);
+    ctx.fillText(cardFooterNote, footerSealX - 28, height - 74);
 
     const link = document.createElement("a");
-    link.download = buildCardDownloadFilename(levelTitle, new Date(), result);
+    link.download = buildCardDownloadFilename(cardDownloadTitle, new Date(), result);
     link.href = canvas.toDataURL("image/png");
     link.click();
   }
@@ -790,7 +902,7 @@ export default function Home() {
           </span>
         </a>
         <nav aria-label="页面导航">
-          <a href="#translator">制礼</a>
+          <a href="#translator">问礼释礼</a>
           <a href="#skill">纳礼</a>
           <a href="#principles">礼法</a>
           <a href="#about">缘起</a>
@@ -801,7 +913,7 @@ export default function Home() {
       <section className="hero" id="top">
         <div className="hero-kicker">
           <span />
-          兼研百段热评与古代典籍译文
+          兼研百段热评、周礼体与古代典籍译文
           <span />
         </div>
         <h1>
@@ -812,10 +924,10 @@ export default function Home() {
         <p className="hero-copy">
           现代白话为骨，典籍译文为法。
           <br />
-          输入一句话，请大儒替你讲得有礼有据。
+          将白话化为周礼，也把周礼翻回人话。
         </p>
         <a className="hero-cta" href="#translator">
-          入席问礼
+          入席问礼释礼
           <Icon name="arrow" />
         </a>
         <div className="hero-orbit orbit-one" aria-hidden="true">
@@ -862,7 +974,7 @@ export default function Home() {
           <i />
           <span>正其名</span>
           <i />
-          <span>然后成礼</span>
+          <span>然后知意</span>
         </div>
       </figure>
 
@@ -872,8 +984,8 @@ export default function Home() {
             <i>壹</i>
           </span>
           <div>
-            <p>一言入席，百礼相生</p>
-            <h2>请说人话，再成周礼</h2>
+            <p>问礼成文，释礼还意</p>
+            <h2>白话可入礼，礼文可还俗</h2>
           </div>
         </div>
 
@@ -881,70 +993,134 @@ export default function Home() {
           <div className="translator-panel input-panel">
             <div className="panel-heading">
               <div>
-                <span className="panel-label">原言</span>
-                <h3>你本来想说什么？</h3>
+                <span className="panel-label">{isPlainDirection ? "礼文" : "原言"}</span>
+                <h3>{isPlainDirection ? "哪段礼法太绕？" : "你本来想说什么？"}</h3>
               </div>
-              <span className={`character-count ${text.length > 280 ? "warning" : ""}`}>
-                {text.length} / 300
+              <span className={`character-count ${text.length > inputLimit - 20 ? "warning" : ""}`}>
+                {text.length} / {inputLimit}
               </span>
+            </div>
+
+            <div className="direction-switch" role="radiogroup" aria-label="选择翻译方向">
+              {directions.map((item) => (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={direction === item.id}
+                  className={direction === item.id ? "active" : ""}
+                  key={item.id}
+                  onClick={() => {
+                    if (direction === item.id) return;
+                    setDirection(item.id);
+                    setText("");
+                    setResult("");
+                    setError("");
+                    setCopied(false);
+                    setIsDemo(false);
+                  }}
+                >
+                  <strong>{item.title}</strong>
+                  <small>{item.description}</small>
+                </button>
+              ))}
             </div>
 
             <textarea
               value={text}
               onChange={(event) => {
-                setText(event.target.value.slice(0, 300));
+                setText(event.target.value.slice(0, inputLimit));
                 setError("");
               }}
-              placeholder="例如：疯狂星期四，谁愿请我一食才合乎周礼……"
-              aria-label="输入需要翻译的原话"
-              maxLength={300}
+              placeholder={
+                isPlainDirection
+                  ? "粘贴一段周礼体，例如：我听闻，古人设宴……"
+                  : "例如：疯狂星期四，谁愿请我一食才合乎周礼……"
+              }
+              aria-label={isPlainDirection ? "输入需要释义的周礼体" : "输入需要翻译的原话"}
+              maxLength={inputLimit}
             />
 
             <div className="example-row">
               <span>不知说什么？</span>
               <div>
-                {examples.map((example) => (
+                {activeExamples.map((example) => (
                   <button
                     key={example}
                     type="button"
                     onClick={() => setText(example)}
+                    title={example}
                   >
-                    {example}
+                    {isPlainDirection ? getExamplePreview(example) : example}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="divider">
-              <span>择其辞气</span>
-            </div>
+            {!isPlainDirection && (
+              <>
+                <div className="divider">
+                  <span>择其辞气</span>
+                </div>
 
-            <div className="mode-grid" role="radiogroup" aria-label="选择说话方式">
-              {modes.map((item) => (
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={mode === item.id}
-                  className={mode === item.id ? "active" : ""}
-                  key={item.id}
-                  onClick={() => setMode(item.id)}
-                >
-                  <span className="mode-mark">{item.mark}</span>
-                  <span>
-                    <strong>{item.title}</strong>
-                    <small>{item.description}</small>
-                  </span>
-                </button>
-              ))}
-            </div>
+                <div className="mode-grid" role="radiogroup" aria-label="选择说话方式">
+                  {modes.map((item) => (
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={mode === item.id}
+                      className={mode === item.id ? "active" : ""}
+                      key={item.id}
+                      onClick={() => setMode(item.id)}
+                    >
+                      <span className="mode-mark">{item.mark}</span>
+                      <span>
+                        <strong>{item.title}</strong>
+                        <small>{item.description}</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {isPlainDirection && (
+              <>
+                <div className="divider">
+                  <span>择其释法</span>
+                </div>
+
+                <div className="mode-grid" role="radiogroup" aria-label="选择释礼方式">
+                  {plainModes.map((item) => (
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={plainMode === item.id}
+                      className={plainMode === item.id ? "active" : ""}
+                      key={item.id}
+                      onClick={() => setPlainMode(item.id)}
+                    >
+                      <span className="mode-mark">{item.mark}</span>
+                      <span>
+                        <strong>{item.title}</strong>
+                        <small>{item.description}</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
 
             <div className="level-field">
               <div>
-                <span className="field-title">礼制深浅</span>
-                <span className="field-help">由短评到长篇辩经</span>
+                <span className="field-title">
+                  {isPlainDirection ? "释义详略" : "礼制深浅"}
+                </span>
+                <span className="field-help">
+                  {isPlainDirection ? "由一句人话到分层拆解" : "由短评到长篇辩经"}
+                </span>
               </div>
               <div className="level-switch" role="radiogroup" aria-label="选择生成长度">
-                {levels.map((item) => (
+                {activeLevels.map((item) => (
                   <button
                     type="button"
                     role="radio"
@@ -970,7 +1146,11 @@ export default function Home() {
             >
               <span className="button-decoration">◆</span>
               <span>
-                {loading ? loadingLines[loadingIndex] : "请周公制礼"}
+                {loading
+                  ? activeLoadingLines[loadingIndex]
+                  : isPlainDirection
+                    ? "请礼官释义"
+                    : "请周公制礼"}
               </span>
               {loading ? (
                 <span className="loading-dots" aria-hidden="true">
@@ -988,16 +1168,16 @@ export default function Home() {
             className={`translator-panel result-panel ${result ? "has-result" : ""}`}
             ref={resultRef}
           >
-            <div className="result-topline">
-              <div>
-                <span className="panel-label inverse">成礼</span>
-                <span className="result-style">
-                  {selectedMode.title} ·{" "}
-                  {levels.find((item) => item.id === level)?.title}
+	            <div className="result-topline">
+	              <div>
+	                <span className="panel-label inverse">{isPlainDirection ? "释礼" : "成礼"}</span>
+	                <span className="result-style">
+	                  {isPlainDirection ? selectedPlainMode.title : selectedMode.title} ·{" "}
+	                  {activeLevels.find((item) => item.id === level)?.title}
                 </span>
               </div>
               <span className="result-seal" aria-hidden="true">
-                合礼
+                {isPlainDirection ? "人话" : "合礼"}
               </span>
             </div>
 
@@ -1015,26 +1195,32 @@ export default function Home() {
                   </button>
                   <button type="button" onClick={downloadCard}>
                     <Icon name="download" />
-                    生成礼帖
+                    {isPlainDirection ? "生成释帖" : "生成礼帖"}
                   </button>
                   <button type="button" onClick={translate}>
                     <Icon name="refresh" />
-                    再议一次
+                    {isPlainDirection ? "再释一次" : "再议一次"}
                   </button>
                 </div>
                 <div className="result-meta">
-                  <span>{isDemo ? "本地演示 · 配置 API 后启用大模型" : "DeepSeek 大儒已阅"}</span>
-                  {remaining !== null && (
-                    <span>
-                      近10分钟还可问礼 {remaining} 次
-                      {dailyRemaining !== null
-                        ? ` · 今日还可问 ${dailyRemaining} 次`
-                        : ""}
-                      {retryAfterSeconds !== null
-                        ? ` · 约 ${Math.ceil(retryAfterSeconds / 60)} 分钟后再问`
-                        : ""}
-                    </span>
-                  )}
+                  <span>
+                    {isDemo
+                      ? "本地演示 · 配置 API 后启用大模型"
+                      : isPlainDirection
+                        ? "DeepSeek 释礼官已阅"
+                        : "DeepSeek 大儒已阅"}
+                  </span>
+	                  {remaining !== null && (
+	                    <span>
+	                      近10分钟还可{activeDirectionVerb} {remaining} 次
+	                      {dailyRemaining !== null
+	                        ? ` · 今日还可${isPlainDirection ? "释礼" : "问礼"} ${dailyRemaining} 次`
+	                        : ""}
+	                      {retryAfterSeconds !== null
+	                        ? ` · 约 ${Math.ceil(retryAfterSeconds / 60)} 分钟后再${isPlainDirection ? "释礼" : "问礼"}`
+	                        : ""}
+	                    </span>
+	                  )}
                 </div>
                 <p className="result-support">
                   若此器有用，可回{" "}
@@ -1047,11 +1233,11 @@ export default function Home() {
             ) : (
               <div className="empty-result">
                 <span className="empty-glyph">礼</span>
-                <p>言未至，礼未成</p>
+                <p>{isPlainDirection ? "礼未释，人未懂" : "言未至，礼未成"}</p>
                 <small>
-                  在左侧写下一句话
+                  {isPlainDirection ? "在左侧粘贴一段周礼体" : "在左侧写下一句话"}
                   <br />
-                  选择辞气，再请周公制礼
+                  {isPlainDirection ? "请礼官翻回正常人话" : "选择辞气，再请周公制礼"}
                 </small>
               </div>
             )}
@@ -1065,31 +1251,31 @@ export default function Home() {
             <span className="eyebrow">请礼归家 · 免费下载</span>
             <h2>把这套礼法，<br />请进你自己的 AI</h2>
           </div>
-          <p>
-            不必每次打开网页，也不消耗本站的 API。
-            一键复制 Skill 后，直接粘贴到任意 AI 聊天框里就能用；
-            也可以下载后安装，让自己的 AI
-            温言相劝、大儒辩经、强行圆场或痛心疾首。
-          </p>
+	          <p>
+	            不必每次打开网页，也不消耗本站的 API。
+	            一键复制 Skill 后，直接粘贴到任意 AI 聊天框里就能用；
+	            也可以下载后安装，让自己的 AI
+	            既能问礼成文，也能释礼还意。
+	          </p>
         </div>
 
         <div className="skill-layout">
           <article className="skill-package-card">
             <div className="skill-package-top">
               <span className="skill-knot" aria-hidden="true">礼</span>
-              <div>
-                <small>AI SKILL · 试行第一版</small>
-                <h3>speak-zhouli</h3>
-                <p>现代白话为骨，礼法故事为证。</p>
-              </div>
+	              <div>
+	                <small>AI SKILL · 试行第一版</small>
+	                <h3>speak-zhouli</h3>
+	                <p>问礼成文，释礼还意。</p>
+	              </div>
             </div>
 
-            <div className="skill-capabilities" aria-label="Skill 能力">
-              <span>温言相劝</span>
-              <span>大儒辩经</span>
-              <span>强行圆场</span>
-              <span>痛心疾首</span>
-            </div>
+	            <div className="skill-capabilities" aria-label="Skill 能力">
+	              <span>温言相劝</span>
+	              <span>大儒辩经</span>
+	              <span>释礼还意</span>
+	              <span>锐评拆穿</span>
+	            </div>
 
             <div className="skill-file-list">
               <span><i>文</i> SKILL.md</span>
@@ -1121,10 +1307,10 @@ export default function Home() {
                 href="/downloads/speak-zhouli-skill.zip"
                 download
               >
-                <span>
-                  <strong>下载合乎周礼 Skill</strong>
-                  <small>ZIP · 解压即可安装</small>
-                </span>
+	                <span>
+	                  <strong>下载问礼释礼 Skill</strong>
+	                  <small>ZIP · 解压即可安装</small>
+	                </span>
                 <Icon name="download" />
               </a>
             </div>
@@ -1151,10 +1337,10 @@ export default function Home() {
                 <span>一</span>
                 <div>
                   <h4>最快用法：复制全文</h4>
-                  <p>
-                    点击左侧“一键复制 Skill 全文”，直接粘贴进 AI
-                    的聊天框。AI 读完后，你再发要改写的话即可。
-                  </p>
+	                  <p>
+	                    点击左侧“一键复制 Skill 全文”，直接粘贴进 AI
+	                    的聊天框。AI 读完后，你可发白话请它问礼，也可发周礼体请它释礼。
+	                  </p>
                 </div>
               </li>
               <li>
@@ -1179,10 +1365,10 @@ export default function Home() {
                 <div>
                   <h4>在对话中点名使用</h4>
                   <div className="prompt-example">
-                    <p>
-                      使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”
-                      改写成强行圆场的小礼。
-                    </p>
+	                    <p>
+	                      使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”
+	                      改写成强行圆场的小礼；或把一段周礼体释礼，翻回直接人话。
+	                    </p>
                     <button type="button" onClick={copySkillPrompt}>
                       <Icon name={skillCopied ? "check" : "copy"} />
                       {skillCopied ? "已抄录" : "复制"}
@@ -1201,36 +1387,36 @@ export default function Home() {
           <span className="section-number">
             <i>叁</i>
           </span>
-          <div>
-            <p>并非满纸之乎者也</p>
-            <h2>何谓真正合乎周礼？</h2>
-          </div>
+	          <div>
+	            <p>并非满纸之乎者也</p>
+	            <h2>何谓问礼成文，释礼还意？</h2>
+	          </div>
         </div>
         <div className="principle-grid">
           <article>
-            <span className="principle-index">01</span>
-            <div className="principle-symbol">白</div>
-            <h3>白话为骨</h3>
-            <p>用现代人听得懂的句子，把一个简单意思郑重地解释很多遍。</p>
-          </article>
+	            <span className="principle-index">01</span>
+	            <div className="principle-symbol">白</div>
+	            <h3>白话为骨</h3>
+	            <p>问礼要让现代人听得懂，释礼要把包装拆回原意。</p>
+	          </article>
           <article>
-            <span className="principle-index">02</span>
-            <div className="principle-symbol">典</div>
-            <h3>故事为证</h3>
-            <p>搬出一位古人、一种草木或一段旧事，为眼前小事建立依据。</p>
-          </article>
+	            <span className="principle-index">02</span>
+	            <div className="principle-symbol">典</div>
+	            <h3>故事为证</h3>
+	            <p>问礼可借古人旧事成文，释礼则识别这些包装服务的真实意思。</p>
+	          </article>
           <article>
-            <span className="principle-index">03</span>
-            <div className="principle-symbol">转</div>
-            <h3>曲折成理</h3>
-            <p>先承认，再转折，最后得出一本正经而略显牵强的结论。</p>
-          </article>
+	            <span className="principle-index">03</span>
+	            <div className="principle-symbol">转</div>
+	            <h3>曲折成理</h3>
+	            <p>问礼先承认再转折，释礼则把转折后的意思直接说清。</p>
+	          </article>
           <article>
-            <span className="principle-index">04</span>
-            <div className="principle-symbol">问</div>
-            <h3>反问定谳</h3>
-            <p>不急着责骂，只用一句温和反问，让对方自己领会礼法深意。</p>
-          </article>
+	            <span className="principle-index">04</span>
+	            <div className="principle-symbol">问</div>
+	            <h3>反问定谳</h3>
+	            <p>问礼用反问收束，释礼把反问背后的诉求翻成人话。</p>
+	          </article>
         </div>
       </section>
 
@@ -1240,24 +1426,24 @@ export default function Home() {
           <span>评</span>
         </div>
         <div>
-          <span className="eyebrow">缘起</span>
-          <h2>从一百个视频的评论区，也从古代典籍的译文里，重新学会说话。</h2>
+	          <span className="eyebrow">缘起</span>
+	          <h2>从一百个视频的评论区，也从古代典籍的译文里，学会来回说话。</h2>
         </div>
         <p>
-          我们观察了“大周礼时代”近期一百个相关视频中的高赞评论，
-          也参考《周礼》《论语》《孟子》《出师表》《桃花源记》等常见篇目的白话译文：
-          真正受欢迎的不是晦涩古文，而是那种曾在课文旁边见过的翻译腔。
-          这个工具保留那份一本正经的幽默，也尽量让每个名分有来处、每个道理听得懂。
+	          我们观察了“大周礼时代”近期一百个相关视频中的高赞评论，
+	          也参考《周礼》《论语》《孟子》《出师表》《桃花源记》等常见篇目的白话译文：
+	          真正受欢迎的不是晦涩古文，而是那种曾在课文旁边见过的翻译腔。
+	          这个工具既保留一本正经的幽默，也提供释礼功能，让每个名分能被说回人话。
         </p>
       </section>
 
       <footer>
         <div className="brand footer-brand">
           <span className="brand-seal">礼</span>
-          <span>
-            <strong>合乎周礼</strong>
-            <small>言之有物，戏而有度</small>
-          </span>
+	          <span>
+	            <strong>合乎周礼</strong>
+	            <small>问礼有据，释礼有意</small>
+	          </span>
         </div>
         <div className="footer-note">
           <p>本工具用于语言娱乐与文化创作，生成内容请自行判断与核实。</p>

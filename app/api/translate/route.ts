@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  buildPlainPrompt,
   buildUserPrompt,
+  PLAIN_SYSTEM_PROMPT,
   SYSTEM_PROMPT,
+  type PlainMode,
+  type ZhouliDirection,
   type ZhouliLevel,
   type ZhouliMode,
 } from "@/lib/prompt";
@@ -15,6 +19,13 @@ const VALID_MODES = new Set<ZhouliMode>([
   "lament",
 ]);
 const VALID_LEVELS = new Set<ZhouliLevel>(["light", "standard", "grand"]);
+const VALID_DIRECTIONS = new Set<ZhouliDirection>(["to_zhouli", "to_plain"]);
+const VALID_PLAIN_MODES = new Set<PlainMode>([
+  "direct",
+  "explain",
+  "subtext",
+  "roast",
+]);
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_WINDOW_LIMIT = 12;
 const RATE_DAY_LIMIT = 60;
@@ -156,6 +167,86 @@ function demoResult(text: string, mode: ZhouliMode, level: ZhouliLevel) {
   return `${openings[mode]}${middle}${endings[mode]}`;
 }
 
+function demoPlainResult(text: string, level: ZhouliLevel, plainMode: PlainMode = "direct") {
+  const normalized = text
+    .replace(/我听闻|我曾听闻|我听说|若按礼法来看|这样看来|难道不是|君子|贤者|礼法|名分|体面/g, "")
+    .replace(/[，。！？；：、\s]+/g, " ")
+    .trim();
+  const short =
+    stripPlainPreamble(normalized.slice(0, 80)) || "这段话是在表达一个很简单的意思。";
+
+  if (level === "light") {
+    return short;
+  }
+
+  if (plainMode === "roast") {
+    return [
+      short,
+      "礼法包装主要是在把真实意思说得不那么直。",
+    ].join("\n");
+  }
+
+  if (level === "grand") {
+    return [
+      short,
+      "那些古人、宴席和名分，大多只是为了把一句普通话说得更郑重。",
+      "删掉包装后，重点是态度和诉求，不是典故本身。",
+    ].join("\n");
+  }
+
+  return [
+    short,
+    "删掉礼法包装后，这就是一句正常人能直接听懂的话。",
+  ].join("\n");
+}
+
+const SHORT_PLAIN_RESULTS: Record<string, string> = {
+  善: "好",
+  善哉: "好啊",
+  大善: "很好",
+  甚善: "很不错",
+  不善: "不好",
+  可: "可以",
+  可也: "可以",
+  可矣: "可以了",
+  不可: "不行",
+  然: "是",
+  然也: "是这样",
+  非也: "不是",
+  诺: "好的",
+  唯: "好的",
+  允: "准了",
+  无妨: "没关系",
+  何也: "为什么",
+  何故: "为什么",
+  何为: "为什么",
+  何如: "怎么样",
+};
+
+function getShortPlainResult(text: string) {
+  const key = text.replace(/[\s，。！？!?；;：:、"'“”‘’（）()《》]+/g, "");
+  return SHORT_PLAIN_RESULTS[key] ?? "";
+}
+
+const PLAIN_PREAMBLE_PATTERNS = [
+  /^\s*(?:这段(?:话|文字|周礼体)?(?:的)?意思(?:是|就是)?|这句(?:话)?(?:的)?意思(?:是|就是)?|意思(?:是|就是)|人话说就是|人话说|翻译一下就是|翻译一下|翻译就是|换成人话就是|换成人话|说白了就是|说白了|简单说就是|简单来说就是|简单说|简单来说|直白点说就是|直白点说|直白说就是|直白说|本质上(?:是|就是)|原来(?:是在说|就是))[：:，,。；;\s]*/u,
+  /^\s*(?:这(?:话|段话|句话)?(?:绕半天)?(?:其实)?(?:是|就是|是在说|是想说)|(?:他|她|对方|作者)(?:其实|真正)?(?:是|就是|是在说|想说)|我其实(?:是|是在说|想说))[：:，,。；;\s]*/u,
+];
+
+function stripPlainPreamble(value: string) {
+  let text = value.trim();
+
+  for (let index = 0; index < 2; index += 1) {
+    const before = text;
+    for (const pattern of PLAIN_PREAMBLE_PATTERNS) {
+      text = text.replace(pattern, "").trim();
+    }
+    if (text === before) break;
+  }
+
+  return text || value.trim();
+}
+
 function cleanGeneratedText(value: string) {
   return value
     .replace(
@@ -171,9 +262,36 @@ function cleanGeneratedText(value: string) {
     .replace(/`([^`\n]+)`/g, "$1")
     .replace(/^#{1,6}\s*/gm, "")
     .replace(/^\s*[-*]\s+/gm, "")
+    .replace(/^\s*\d+[.、]\s+/gm, "")
     .replace(/[ \t]+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function looksIncompleteGeneratedText(value: string, minLength = 16) {
+  const text = value.trim();
+
+  if (text.length < minLength) {
+    return true;
+  }
+
+  if (/[，,、：:；;（(“"《]$/.test(text)) {
+    return true;
+  }
+
+  return /(?:我听说从前|我听闻|我曾听闻|我听说|有人说|朋友说|他说|她说|有人问|于是|所以|但是|而是|比如|一人说|问道|说道|只好说)$/.test(
+    text,
+  );
+}
+
+function getPlainMinimumResultLength(sourceText: string) {
+  const compact = sourceText.replace(/\s+/g, "");
+  const length = Array.from(compact).length;
+
+  if (length <= 2) return 1;
+  if (length <= 6) return 2;
+  if (length <= 12) return 4;
+  return 8;
 }
 
 function pick<T>(items: readonly T[]) {
@@ -503,16 +621,34 @@ async function fetchDeepSeekWithRetry(
 }
 
 export async function POST(request: NextRequest) {
+  let body: {
+    text?: unknown;
+    mode?: unknown;
+    level?: unknown;
+    direction?: unknown;
+    plainMode?: unknown;
+  };
+
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "来意未明，请重新输入。" }, { status: 400 });
+  }
+
+  const direction = VALID_DIRECTIONS.has(body.direction as ZhouliDirection)
+    ? (body.direction as ZhouliDirection)
+    : "to_zhouli";
   const key = getClientKey(request);
   const rate = checkRateLimit(key);
 
   if (!rate.allowed) {
     const isWindowLimit = rate.reason === "window";
+    const verb = direction === "to_plain" ? "释礼" : "问礼";
     return NextResponse.json(
       {
         error: isWindowLimit
-          ? `问礼太急，请约 ${Math.ceil(rate.retryAfterSeconds / 60)} 分钟后再来。`
-          : "今日问礼已满，请明日再来。",
+          ? `${verb}太急，请约 ${Math.ceil(rate.retryAfterSeconds / 60)} 分钟后再来。`
+          : `今日${verb}已满，请明日再来。`,
         remaining: rate.remaining,
         windowRemaining: rate.windowRemaining,
         dailyRemaining: rate.dailyRemaining,
@@ -525,18 +661,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: {
-    text?: unknown;
-    mode?: unknown;
-    level?: unknown;
-  };
-
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "来意未明，请重新输入。" }, { status: 400 });
-  }
-
   const text = typeof body.text === "string" ? body.text.trim() : "";
   const mode = VALID_MODES.has(body.mode as ZhouliMode)
     ? (body.mode as ZhouliMode)
@@ -544,16 +668,39 @@ export async function POST(request: NextRequest) {
   const level = VALID_LEVELS.has(body.level as ZhouliLevel)
     ? (body.level as ZhouliLevel)
     : "standard";
+  const plainMode = VALID_PLAIN_MODES.has(body.plainMode as PlainMode)
+    ? (body.plainMode as PlainMode)
+    : "direct";
+  const maxInputLength = direction === "to_plain" ? 900 : 300;
 
   if (!text) {
     return NextResponse.json({ error: "无言不可成礼，请先写下一句话。" }, { status: 400 });
   }
 
-  if (text.length > 300) {
+  if (text.length > maxInputLength) {
     return NextResponse.json(
-      { error: "言多则礼繁，请将原话控制在300字以内。" },
+      {
+        error:
+          direction === "to_plain"
+            ? "礼文太长，请将待释之文控制在900字以内。"
+            : "言多则礼繁，请将原话控制在300字以内。",
+      },
       { status: 400 },
     );
+  }
+
+  const shortPlainResult = direction === "to_plain" ? getShortPlainResult(text) : "";
+  if (shortPlainResult) {
+    return NextResponse.json({
+      result: shortPlainResult,
+      model: "礼官速释",
+      demo: false,
+      shortPlain: true,
+      remaining: rate.remaining,
+      windowRemaining: rate.windowRemaining,
+      dailyRemaining: rate.dailyRemaining,
+      retryAfterSeconds: rate.retryAfterSeconds,
+    });
   }
 
   if (isCyberAuditRequest(text)) {
@@ -616,7 +763,10 @@ export async function POST(request: NextRequest) {
 
   if (!apiKey) {
     return NextResponse.json({
-      result: demoResult(text, mode, level),
+      result:
+        direction === "to_plain"
+          ? demoPlainResult(text, level, plainMode)
+          : demoResult(text, mode, level),
       model: "本地演示",
       demo: true,
       remaining: rate.remaining,
@@ -627,38 +777,93 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const response = await fetchDeepSeekWithRetry(apiKey, {
+    const isPlainDirection = direction === "to_plain";
+    const requestBody = {
       model: process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: buildUserPrompt(text, mode, level) },
+        {
+          role: "system",
+          content: isPlainDirection ? PLAIN_SYSTEM_PROMPT : SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: isPlainDirection
+            ? buildPlainPrompt(text, level, plainMode)
+            : buildUserPrompt(text, mode, level),
+        },
       ],
-      max_tokens: Number(process.env.MAX_OUTPUT_TOKENS || 720),
-      temperature: 0.9,
+      max_tokens: isPlainDirection
+        ? Math.min(Number(process.env.MAX_OUTPUT_TOKENS || 720), 520)
+        : Number(process.env.MAX_OUTPUT_TOKENS || 720),
+      temperature: isPlainDirection ? 0.18 : 0.68,
       stream: false,
       thinking: { type: "disabled" },
-    });
+    };
 
-    const data = await response.json();
+    let data: {
+      choices?: Array<{
+        finish_reason?: string;
+        message?: { content?: string };
+      }>;
+      usage?: unknown;
+    } = {};
+    let cleanedResult = "";
 
-    if (!response.ok) {
-      console.error("DeepSeek API error:", data);
-      return NextResponse.json(
-        { error: "大儒暂未回应，请稍后再试。" },
-        { status: 502 },
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const response = await fetchDeepSeekWithRetry(apiKey, requestBody);
+      data = await response.json();
+
+      if (!response.ok) {
+        console.error("DeepSeek API error:", data);
+        return NextResponse.json(
+          { error: "大儒暂未回应，请稍后再试。" },
+          { status: 502 },
+        );
+      }
+
+      const generatedText = cleanGeneratedText(
+        data?.choices?.[0]?.message?.content?.trim() || "",
       );
+      cleanedResult = isPlainDirection
+        ? stripPlainPreamble(generatedText)
+        : generatedText;
+
+      if (
+        data?.choices?.[0]?.finish_reason !== "length" &&
+        !looksIncompleteGeneratedText(
+          cleanedResult,
+          isPlainDirection
+            ? getPlainMinimumResultLength(text)
+            : level === "light"
+              ? 30
+              : 40,
+        )
+      ) {
+        break;
+      }
+
+      await wait(300);
     }
 
-    const cleanedResult = cleanGeneratedText(
-      data?.choices?.[0]?.message?.content?.trim() || "",
-    );
-    const result = normalizeFirstPersonWorkResult(
-      text,
-      normalizeDirectedAttackResult(text, cleanedResult, level),
-      level,
-    );
+    const result = isPlainDirection
+      ? cleanedResult
+      : normalizeFirstPersonWorkResult(
+          text,
+          normalizeDirectedAttackResult(text, cleanedResult, level),
+          level,
+        );
 
-    if (!result) {
+    if (
+      !result ||
+      looksIncompleteGeneratedText(
+        result,
+        isPlainDirection
+          ? getPlainMinimumResultLength(text)
+          : level === "light"
+            ? 30
+            : 40,
+      )
+    ) {
       return NextResponse.json(
         { error: "此言尚未成礼，请再试一次。" },
         { status: 502 },
