@@ -17,6 +17,24 @@
   --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
 }
 
+/* 黛玉配色覆盖 */
+[data-persona="daiyu"] {
+  --paper: #ece5db;
+  --paper-light: #f5efe6;
+  --paper-deep: #d1c6b9;
+  --ink: #1f1d1a;
+  --ink-soft: #7a6d5b;
+  --red: #8c4a42;
+  --red-deep: #6a3830;
+  --red-soft: #b57068;
+  --bronze: #7a6a55;
+  --line: rgba(90, 70, 55, 0.18);
+  --dark: #2a2622;
+  --dark-soft: #33302a;
+  --white: #fbf7f0;
+  --shadow: 0 28px 90px rgba(60, 45, 35, 0.12);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -377,6 +395,99 @@ main {
   transform: scale(1.006);
 }
 
+[data-persona="daiyu"] .assembly-image {
+  filter: saturate(0.5) contrast(1.0) sepia(0.02);
+}
+
+.assembly-no-image {
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(135deg, rgba(200, 185, 165, 0.12), transparent 40%, rgba(180, 165, 145, 0.08));
+}
+
+/* 黛玉模式 - UI 主色覆盖 */
+[data-persona="daiyu"] .input-panel {
+  background: #f2ede4;
+  border-color: rgba(90, 70, 55, 0.18);
+}
+
+[data-persona="daiyu"] .input-panel textarea {
+  background:
+    linear-gradient(transparent 39px, rgba(100, 80, 55, 0.10) 40px) 0 0 / 100% 40px,
+    rgba(226, 215, 198, 0.2);
+  border-color: rgba(90, 70, 55, 0.18);
+}
+
+[data-persona="daiyu"] .mode-grid button.active {
+  background: rgba(140, 74, 66, 0.08);
+  border-color: rgba(140, 74, 66, 0.4);
+}
+
+[data-persona="daiyu"] .mode-grid button,
+[data-persona="daiyu"] .level-switch button,
+[data-persona="daiyu"] .example-row button {
+  border-color: rgba(90, 70, 55, 0.16);
+}
+
+[data-persona="daiyu"] .level-switch button.active {
+  background: rgba(140, 74, 66, 0.08);
+  border-color: rgba(140, 74, 66, 0.4);
+  color: var(--red);
+}
+
+[data-persona="daiyu"] .result-topline {
+  border-color: rgba(90, 70, 55, 0.18);
+}
+
+[data-persona="daiyu"] .result-seal {
+  color: #b57068;
+  border-color: rgba(160, 100, 85, 0.48);
+}
+
+[data-persona="daiyu"] .translate-button {
+  background: #8c4a42;
+  border-color: #6a3830;
+}
+
+[data-persona="daiyu"] .translate-button:hover {
+  background: #7a3d36;
+}
+
+[data-persona="daiyu"] .divider::before,
+[data-persona="daiyu"] .divider::after {
+  background: rgba(100, 85, 70, 0.2);
+}
+
+[data-persona="daiyu"] .divider {
+  color: #7a6a55;
+}
+
+[data-persona="daiyu"] .section-number i {
+  background: #8c4a42;
+}
+
+[data-persona="daiyu"] .hero {
+  background: linear-gradient(135deg, #e8dfd2 0%, #d9cebf 100%);
+}
+
+[data-persona="daiyu"] .hero-scroll-indicator {
+  color: rgba(100, 85, 70, 0.3);
+}
+
+[data-persona="daiyu"] .assembly-frame {
+  background: #eae2d6;
+}
+
+[data-persona="daiyu"] .about-seal {
+  border-color: var(--red);
+  box-shadow: inset 0 0 0 6px #d1c6b9, inset 0 0 0 7px rgba(140, 74, 66, 0.6);
+}
+
+[data-persona="daiyu"] .about-section {
+  background: linear-gradient(-12deg, #d9cebf 0%, #eae2d6 100%);
+}
+
 .assembly-wash {
   position: absolute;
   inset: 0;
@@ -613,6 +724,52 @@ main {
 
 .character-count.warning {
   color: var(--red);
+}
+
+.persona-tabs {
+  margin-top: 26px;
+  display: flex;
+  gap: 16px;
+}
+
+.persona-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid rgba(73, 59, 42, 0.16);
+  font: 400 15px/1 var(--serif);
+  transition: 150ms ease;
+}
+
+.persona-tabs button:hover {
+  color: var(--ink);
+  border-color: rgba(73, 59, 42, 0.3);
+}
+
+.persona-tabs button.active {
+  color: var(--red);
+  background: rgba(158, 50, 40, 0.06);
+  border-color: var(--red-soft);
+}
+
+.persona-tab-mark {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  font: 700 14px/1 var(--serif);
+  border: 1px solid currentColor;
+}
+
+.persona-tabs button.active .persona-tab-mark {
+  background: var(--red);
+  color: #f0d8b9;
+  border-color: var(--red);
 }
 
 .input-panel textarea {
@@ -1120,6 +1277,12 @@ main {
   z-index: 1;
 }
 
+.skill-cards-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .skill-package-card {
   min-height: 610px;
   padding: 44px 40px 32px;
@@ -1573,6 +1736,11 @@ main {
   border: 1px solid rgba(218, 136, 119, 0.42);
   border-radius: 50%;
   font: 600 31px/1 var(--serif);
+}
+
+[data-persona="daiyu"] .principle-symbol {
+  color: #b57068;
+  border-color: rgba(160, 100, 85, 0.42);
 }
 
 .principle-grid h3 {

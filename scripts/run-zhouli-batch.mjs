@@ -5,10 +5,11 @@ const baselinePath = process.argv[2] ?? "scripts/zhouli-batch-sample.json";
 const endpoint = process.env.ZHOULI_TEST_ENDPOINT ?? "http://localhost:3000/api/translate";
 
 const baseline = JSON.parse(await fs.readFile(baselinePath, "utf8"));
-const payloads = baseline.results.map(({ text, mode, level }) => ({
+const payloads = baseline.results.map(({ text, mode, level, persona }) => ({
   text,
   mode,
   level,
+  ...(persona ? { persona } : {}),
 }));
 
 const outDir = path.resolve("test-runs");

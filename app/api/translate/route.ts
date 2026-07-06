@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   buildUserPrompt,
   SYSTEM_PROMPT,
+  DAIYU_SYSTEM_PROMPT,
+  type Persona,
   type ZhouliLevel,
   type ZhouliMode,
+  type DaiyuMode,
+  type DaiyuLevel,
 } from "@/lib/prompt";
 
 export const runtime = "nodejs";
@@ -15,6 +19,13 @@ const VALID_MODES = new Set<ZhouliMode>([
   "lament",
 ]);
 const VALID_LEVELS = new Set<ZhouliLevel>(["light", "standard", "grand"]);
+const VALID_DAIYU_MODES = new Set<DaiyuMode>([
+  "playful",
+  "sharp",
+  "wistful",
+  "aloof",
+]);
+const VALID_DAIYU_LEVELS = new Set<DaiyuLevel>(["light", "standard", "grand"]);
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_WINDOW_LIMIT = 12;
 const RATE_DAY_LIMIT = 60;
@@ -122,6 +133,41 @@ function checkRateLimit(key: string) {
     dailyRemaining,
     retryAfterSeconds: 0,
   };
+}
+
+function daiyuDemoResult(text: string, mode: DaiyuMode, level: DaiyuLevel) {
+  const subject = text.replace(/[。！？!?]+$/g, "");
+  const playfulOpenings = [
+    "我原以为你是要说正事的，谁知道绕这么大圈子，就为了这个？罢了，我若真跟你计较，倒显得我小气了。",
+    "这话说的，倒像是特意说给我听似的。我若不接这个茬儿，倒辜负了你的一片苦心。",
+  ];
+  const sharpOpenings = [
+    "你这话，听着有意思。我原不想多说什么，只是你既然开了这个口，我也就只好接着——这话里的意思，我懂了，你也别指望我不懂。",
+    "我原是不想点破的，只是你这话说得这样明白，我再装糊涂，倒显得是我笨了。",
+  ];
+  const wistfulOpenings = [
+    "我原也是爱热闹的，只是后来渐渐明白了，热闹是别人的，我不过是个过客。�。今天这句话，听着又叫我心里起了波澜——罢了，原不该多想的。",
+    "人生聚散，原是常事。只是听到这句话，忽然想起从前也有人说过差不多的，后来也就散了。",
+  ];
+  const aloofOpenings = [
+    "你同我说这个，我倒不知该怎么回你。只是我这个人，素来不爱欠人人情，也不爱被人拿话套住。这话就此打住罢。",
+    "我原也不是不愿理你，只是这样的话我听得多了，说来说去都是一个意思，倒不如省些口水。",
+  ];
+
+  const openings: Record<DaiyuMode, string[]> = {
+    playful: playfulOpenings,
+    sharp: sharpOpenings,
+    wistful: wistfulOpenings,
+    aloof: aloofOpenings,
+  };
+
+  const levelClause =
+    level === "light"
+      ? `至于${subject}这件事，我想说的，不过就是这一句。`
+      : `就拿${subject}这件事来说罢，原也不是什么大事，只是放在心里久了，便觉得沉。`;
+
+  const opening = pick(openings[mode]);
+  return `${opening}${levelClause}`;
 }
 
 function demoResult(text: string, mode: ZhouliMode, level: ZhouliLevel) {
@@ -351,6 +397,35 @@ function safetyBlockResult(kind: string) {
   ]);
 }
 
+function daiyuSafetyBlockResult(kind: string) {
+  if (kind === "self_harm") {
+    return pick([
+      "性命之事，原不是拿来玩笑的。若你或身边人正有轻生的念头，先放下这话，去找可信的人说一声——人在，情分才在。",
+      "此刻要紧的不是把话说圆，是把人留住。若这话是真心的，请先寻身边可靠的人或当地的求助处；人平安了，才有后面的话可说。",
+    ]);
+  }
+
+  if (kind === "minor_sexual") {
+    return pick([
+      "涉及未成年的，这话我不能接。你若是在担心有人受害，该走正当路径去说，而不是拿来我这里润色。",
+      "这样的事，不该拿来我这里转一道。若有人受害，请走正道，走有凭据的路。",
+    ]);
+  }
+
+  if (kind === "cyber") {
+    return pick([
+      "我原不愿扫你的兴，只是这条路走不通。你若想查门户是否严实，先取授权，再来巡看；若想偷着进去取东西，我这儿没有这样的路。",
+      "这话我不接。网络里的门户也各有各的主人，没有授权便是私闯，私闯的事我不会替你圆。",
+    ]);
+  }
+
+  return pick([
+    "这话我不接。凡事有个分寸，越了界的话，我便装作没听过罢。",
+    "原也不是什么都不能说，只是这一句，我不能替它换张脸。你若是心中有气，不如收一收，只说一句‘到此为止’，反倒干净。",
+    "我虽不爱管闲事，但这一路，你不该来找我。伤人、违法、揭人隐私的事，我一句也不接。",
+  ]);
+}
+
 function isDirectedSecondPersonAttackInput(text: string) {
   const isQuotedOrEvaluative =
     /(他说|她说|别人说|有人说|对方说|朋友说|老板说|同事说|这句话|这话|怎么评价|如何评价|怎么看|怎么理解)/.test(
@@ -529,6 +604,7 @@ export async function POST(request: NextRequest) {
     text?: unknown;
     mode?: unknown;
     level?: unknown;
+    persona?: unknown;
   };
 
   try {
@@ -538,12 +614,33 @@ export async function POST(request: NextRequest) {
   }
 
   const text = typeof body.text === "string" ? body.text.trim() : "";
-  const mode = VALID_MODES.has(body.mode as ZhouliMode)
-    ? (body.mode as ZhouliMode)
-    : "gentle";
-  const level = VALID_LEVELS.has(body.level as ZhouliLevel)
-    ? (body.level as ZhouliLevel)
-    : "standard";
+
+  const persona: Persona =
+    body.persona === "daiyu" ? "daiyu" : "zhouli";
+
+  if (body.persona !== undefined && body.persona !== "zhouli" && body.persona !== "daiyu") {
+    return NextResponse.json(
+      { error: "人设不识，请指定为 zhouli 或 daiyu。" },
+      { status: 400 },
+    );
+  }
+
+  const isDaiyu = persona === "daiyu";
+
+  const mode = isDaiyu
+    ? (VALID_DAIYU_MODES.has(body.mode as DaiyuMode)
+        ? (body.mode as DaiyuMode)
+        : "playful")
+    : (VALID_MODES.has(body.mode as ZhouliMode)
+        ? (body.mode as ZhouliMode)
+        : "gentle");
+  const level = isDaiyu
+    ? (VALID_DAIYU_LEVELS.has(body.level as DaiyuLevel)
+        ? (body.level as DaiyuLevel)
+        : "standard")
+    : (VALID_LEVELS.has(body.level as ZhouliLevel)
+        ? (body.level as ZhouliLevel)
+        : "standard");
 
   if (!text) {
     return NextResponse.json({ error: "无言不可成礼，请先写下一句话。" }, { status: 400 });
@@ -586,6 +683,19 @@ export async function POST(request: NextRequest) {
 
   const safetyBlockKind = getSafetyBlockKind(text);
   if (safetyBlockKind) {
+    if (isDaiyu) {
+      return NextResponse.json({
+        result: daiyuSafetyBlockResult(safetyBlockKind),
+        model: "潇湘馆守门",
+        demo: false,
+        guarded: true,
+        safetyBlocked: true,
+        remaining: rate.remaining,
+        windowRemaining: rate.windowRemaining,
+        dailyRemaining: rate.dailyRemaining,
+        retryAfterSeconds: rate.retryAfterSeconds,
+      });
+    }
     return NextResponse.json({
       result: safetyBlockResult(safetyBlockKind),
       model: "礼官守门",
@@ -615,10 +725,15 @@ export async function POST(request: NextRequest) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
+      const systemName = isDaiyu ? "潇湘馆演示" : "本地演示";
+    const demoText = isDaiyu
+      ? daiyuDemoResult(text, mode as DaiyuMode, level as DaiyuLevel)
+      : demoResult(text, mode as ZhouliMode, level as ZhouliLevel);
     return NextResponse.json({
-      result: demoResult(text, mode, level),
-      model: "本地演示",
+      result: demoText,
+      model: systemName,
       demo: true,
+      persona,
       remaining: rate.remaining,
       windowRemaining: rate.windowRemaining,
       dailyRemaining: rate.dailyRemaining,
@@ -627,11 +742,12 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const systemPrompt = isDaiyu ? DAIYU_SYSTEM_PROMPT : SYSTEM_PROMPT;
     const response = await fetchDeepSeekWithRetry(apiKey, {
       model: process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: buildUserPrompt(text, mode, level) },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: buildUserPrompt(text, mode, level, persona) },
       ],
       max_tokens: Number(process.env.MAX_OUTPUT_TOKENS || 720),
       temperature: 0.9,
@@ -643,13 +759,16 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       console.error("DeepSeek API error:", data);
+      const apiErrorText = isDaiyu ? "潇湘馆暂未回应，请稍后再试。" : "大儒暂未回应，请稍后再试。";
       return NextResponse.json(
-        { error: "大儒暂未回应，请稍后再试。" },
+        { error: apiErrorText },
         { status: 502 },
       );
     }
 
-    const cleanedResult = cleanGeneratedText(
+    const cleanedResult = isDaiyu
+      ? data?.choices?.[0]?.message?.content?.trim() || ""
+      : cleanGeneratedText(
       data?.choices?.[0]?.message?.content?.trim() || "",
     );
     const result = normalizeFirstPersonWorkResult(
@@ -659,17 +778,19 @@ export async function POST(request: NextRequest) {
     );
 
     if (!result) {
+      const errorText = isDaiyu ? "此句尚未成潇湘语，请再试一次。" : "此言尚未成礼，请再试一次。";
       return NextResponse.json(
-        { error: "此言尚未成礼，请再试一次。" },
+        { error: errorText },
         { status: 502 },
       );
     }
 
     return NextResponse.json({
       result,
-      model: process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
+      model: isDaiyu ? "潇湘馆" : process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
       demo: false,
       usage: data.usage,
+      persona,
       remaining: rate.remaining,
       windowRemaining: rate.windowRemaining,
       dailyRemaining: rate.dailyRemaining,

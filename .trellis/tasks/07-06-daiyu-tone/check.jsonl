@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Quality check criteria for verifying changes"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "TypeScript type safety expectations"}
+{"file": ".trellis/tasks/07-06-daiyu-tone/prd.md", "reason": "PRD requirements to verify against"}
+{"file": ".trellis/tasks/07-06-daiyu-tone/design.md", "reason": "Technical design to verify implementation matches"}

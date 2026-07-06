@@ -1,0 +1,4 @@
+interface:
+  display_name: "潇湘评"
+  short_description: "将现代中文改写为黛玉体白话翻译腔——一针见血、拒绝表演"
+  default_prompt: "使用 $speak-daiyu 把这句话改写成黛玉腔的白话翻译腔。"

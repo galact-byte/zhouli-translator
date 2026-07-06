@@ -32,7 +32,7 @@
 
 ## What Is This
 
-`合乎周礼` 是一个中文梗文案生成器。它把普通中文改写成“大周礼时代”流行的
+`合乎周礼` 是一个中文梗文案生成器。它把普通中文改写成"大周礼时代"流行的
 白话翻译腔：先讲一个看似古代的道理，再把现代小事放进礼法、名分、职分和体面里一本正经地论证。
 
 在线版本：[hehuzhouli.com](https://hehuzhouli.com)
@@ -49,7 +49,7 @@ Skill 发布处。
 - `/api/translate` 服务端生成接口。
 - DeepSeek Chat Completions 调用逻辑。
 - 周礼体提示词构造与清洗规则。
-- 可复制、可下载的 `speak-zhouli` Skill 包。
+- 可复制、可下载的 `speak-zhouli` 和 `speak-daiyu` Skill 包。
 - 礼帖图片生成与下载逻辑。
 
 仓库不包含真实 API Key、私有日志、线上账号凭据或生产平台的安全配置。
@@ -62,6 +62,7 @@ Skill 发布处。
 | 四种辞气 | 温言相劝、大儒辩经、强行圆场、痛心疾首 |
 | 演示模式 | 没有 API Key 时仍可预览界面与交互 |
 | Skill 分发 | 支持一键复制 Skill 全文和 ZIP 下载 |
+| 双人设 | 周礼腔 + 林黛玉腔，Tab 一键切换 |
 | 图片礼帖 | 将生成结果保存为适合传播的图片 |
 | 公开前审计 | 内置脚本扫描明显密钥与私钥块 |
 
@@ -86,6 +87,67 @@ Output style:
 今日正逢星期四，我开口求一食，看似嘴馋，其实是在给诸位一个行仁义、修情分的机会。
 若有人愿意请客，便不是破费，而是以鸡会友，这难道不也合乎周礼吗？
 ```
+
+## 林黛玉腔调
+
+在现有周礼腔的基础上，项目新增了**林黛玉腔调**（Daiyu persona）选项，
+用户可在界面上方 Tab 切换周礼/黛玉两套人设。
+
+### 设计哲学
+
+黛玉腔与周礼腔的根本区别在于笑点/共鸣机制：
+
+- **周礼腔**靠**论证**：严密推导→荒唐结论。一本正经地建立类比，再层层推导。
+- **黛玉腔**靠**戳破**：拒绝论证，一针见血。不绕弯子，直接说真话，然后一句"罢了"就收。
+
+黛玉腔的内核不是"多愁善感"，而是**"太清醒，又拒绝表演"**。黛玉比所有人都看得透，
+但不肯把这份聪明用来讨好和经营人缘——她的犀利、伤感、孤高，都是"拒绝表演"的不同侧面。
+
+### 示例对照
+
+Input:
+
+```text
+疯狂星期四，谁愿请我一食才合乎周礼
+```
+
+**周礼腔（小礼 · 强行圆场）：**
+
+```text
+我听闻，古人设宴，并非只为一餐之饱，也是借饭食来观朋友情义。
+今日正逢星期四，我开口求一食，看似嘴馋，其实是在给诸位一个行仁义、修情分的机会。
+若有人愿意请客，便不是破费，而是以鸡会友，这难道不也合乎周礼吗？
+```
+
+**黛玉腔（清怨 · 夹枪带棒）：**
+
+```text
+我原不是那等嘴馋要人请客的人，只是这话说出来，倒要看看谁肯搭这个茬儿。
+罢了，没人应也不打紧，我自己去买便是——原也不指望谁能把我这点小心思放在眼里。
+```
+
+**黛玉腔（浅愁 · 孤高拒人）：**
+
+```text
+我原没指望谁请，不过白说一句，若真无人应，倒显得我巴巴儿地讨人嫌了。罢了，不说了。
+```
+
+### 四种语气
+
+| 语气 | 定义 | 使用场景 |
+|------|------|----------|
+| 娇嗔打趣 | 机锋轻巧，底色是亲近不是攻击 | 关系亲近、可以卸下防备的语境 |
+| 夹枪带棒 | 一针见血拆穿敷衍、冷落、虚伪 | 对方明显在敷衍或有优越感的场合 |
+| 触景伤怀 | 由眼前小事清醒联想到命运处境 | 用户话里带无奈/孤独感的场合 |
+| 孤高拒人 | 直接说真话，拒绝讨好或退让 | 用户想拒绝/划界限的场合 |
+
+### 三档篇幅
+
+| 档位 | 字数 | 说明 |
+|------|------|------|
+| 浅愁 | 70-130字 | 一两句戳破或自嘲，不展开完整情绪起伏 |
+| 清怨 | 150-260字 | 一次转折，可选一句自造诗意小段 |
+| 伤逝 | 280-450字 | 从小事清醒推到命运认知，1-2句自造诗意段 |
 
 ## Quick Start
 
@@ -131,17 +193,18 @@ scripts/
   public-audit.mjs             Public-release secret scan
   run-zhouli-batch.mjs         Batch regression runner
 skill-package/
-  speak-zhouli/                Source Skill package
+  speak-zhouli/                Zhouli Skill source
+  speak-daiyu/                 Daiyu Skill source
 ```
 
 ## DeepSeek Runtime
 
 The production generation path:
 
-1. The browser submits text, mode, level, and a client id to `/api/translate`.
-2. The server validates input length, mode, and level.
+1. The browser submits text, mode, level, persona, and a client id to `/api/translate`.
+2. The server validates input length, mode, level, and persona.
 3. A lightweight in-memory rate limiter checks the request.
-4. The server builds a fixed system prompt plus a user prompt.
+4. The server builds a persona-specific system prompt plus a user prompt.
 5. DeepSeek returns a candidate response.
 6. The server cleans common failure patterns before returning JSON.
 
@@ -159,22 +222,25 @@ side abuse controls and billing alerts.
 
 ## Speak Zhouli Skill
 
-The website ships a standalone `speak-zhouli` Skill:
+The website ships standalone Skills:
 
 | Asset | Path |
 | --- | --- |
-| Skill source | `skill-package/speak-zhouli/` |
-| Website copy source | `public/downloads/speak-zhouli-SKILL.md` |
-| Website ZIP download | `public/downloads/speak-zhouli-skill.zip` |
-| Public copy URL | `/downloads/speak-zhouli-SKILL.md` |
-| Public ZIP URL | `/downloads/speak-zhouli-skill.zip` |
+| Zhouli Skill source | `skill-package/speak-zhouli/` |
+| Zhouli website copy | `public/downloads/speak-zhouli-SKILL.md` |
+| Zhouli ZIP download | `public/downloads/speak-zhouli-skill.zip` |
+| Daiyu Skill source | `skill-package/speak-daiyu/` |
+| Daiyu website copy | `public/downloads/speak-daiyu-SKILL.md` |
+| Daiyu ZIP download | `public/downloads/speak-daiyu-skill.zip` |
 
-After editing the Skill source, rebuild the public assets:
+After editing any Skill source, rebuild the public assets:
 
 ```bash
 cp skill-package/speak-zhouli/SKILL.md public/downloads/speak-zhouli-SKILL.md
-cd skill-package
-zip -r -X ../public/downloads/speak-zhouli-skill.zip speak-zhouli
+cd skill-package && zip -r -X ../public/downloads/speak-zhouli-skill.zip speak-zhouli && cd ..
+
+cp skill-package/speak-daiyu/SKILL.md public/downloads/speak-daiyu-SKILL.md
+cd skill-package && zip -r -X ../public/downloads/speak-daiyu-skill.zip speak-daiyu && cd ..
 ```
 
 ## Quality Checks
@@ -203,6 +269,13 @@ Use a private baseline by passing a compatible JSON file:
 
 ```bash
 node scripts/run-zhouli-batch.mjs test-runs/your-baseline.json
+```
+
+Daiyu batch test:
+
+```bash
+ZHOULI_TEST_ENDPOINT=http://localhost:3000/api/translate \
+  node scripts/run-zhouli-batch.mjs scripts/daiyu-batch-sample.json
 ```
 
 `test-runs/` is ignored by Git and is intended for private regression samples
