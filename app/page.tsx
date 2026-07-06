@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildCardDownloadFilename } from "@/lib/cardDownload";
-import type { ZhouliLevel, ZhouliMode } from "@/lib/prompt";
+import type { Persona, ZhouliLevel, ZhouliMode, DaiyuMode, DaiyuLevel } from "@/lib/prompt";
 
 const modes: Array<{
   id: ZhouliMode;
@@ -47,6 +47,48 @@ const levels: Array<{
   { id: "grand", title: "大礼", description: "层层设喻论证" },
 ];
 
+const daiyuModes: Array<{
+  id: DaiyuMode;
+  title: string;
+  description: string;
+  mark: string;
+}> = [
+  {
+    id: "playful",
+    title: "娇嗔打趣",
+    description: "机锋轻巧，底色亲近",
+    mark: "嗔",
+  },
+  {
+    id: "sharp",
+    title: "夹枪带棒",
+    description: "一针见血，不留情面",
+    mark: "锋",
+  },
+  {
+    id: "wistful",
+    title: "触景伤怀",
+    description: "由小及大，命运清醒",
+    mark: "叹",
+  },
+  {
+    id: "aloof",
+    title: "孤高拒人",
+    description: "不解释，不迁就",
+    mark: "清",
+  },
+];
+
+const daiyuLevels: Array<{
+  id: DaiyuLevel;
+  title: string;
+  description: string;
+}> = [
+  { id: "light", title: "浅愁", description: "一两句戳破或自嘲" },
+  { id: "standard", title: "清怨", description: "一次转折，恰如其分" },
+  { id: "grand", title: "伤逝", description: "从小事推到命运认知" },
+];
+
 const examples = [
   "华强买瓜，如何问这瓜保熟吗才合乎周礼",
   "疯狂星期四，谁愿请我一食才合乎周礼",
@@ -58,12 +100,20 @@ const originalVideoUrl =
   "https://www.bilibili.com/video/BV12a7N6qE1g/";
 const githubUrl = "https://github.com/Aspirin0000/zhouli-translator";
 
-const loadingLines = [
-  "正在正衣冠，辨名分",
-  "正在查阅古代贤者旧事",
-  "正在把道理说得似乎很有道理",
-  "正在请鲁国大儒作最后裁定",
-];
+const loadingLines: Record<string, string[]> = {
+  zhouli: [
+    "正在正衣冠，辨名分",
+    "正在查阅古代贤者旧事",
+    "正在把道理说得似乎很有道理",
+    "正在请鲁国大儒作最后裁定",
+  ],
+  daiyu: [
+    "正在研墨展纸，拈笔沉吟",
+    "正在潇湘馆翻检旧句",
+    "正在把话说得一针见血",
+    "正在请颦卿作最后定评",
+  ],
+};
 
 function Icon({
   name,
@@ -233,8 +283,9 @@ async function fetchWithTimeout(
 async function fetchTranslateWithRetry(
   payload: {
     text: string;
-    mode: ZhouliMode;
-    level: ZhouliLevel;
+    mode: ZhouliMode | DaiyuMode;
+    level: ZhouliLevel | DaiyuLevel;
+    persona?: Persona;
   },
   clientId: string,
 ) {
@@ -269,8 +320,9 @@ async function fetchTranslateWithRetry(
 
 export default function Home() {
   const [text, setText] = useState("");
-  const [mode, setMode] = useState<ZhouliMode>("gentle");
-  const [level, setLevel] = useState<ZhouliLevel>("standard");
+  const [persona, setPersona] = useState<Persona>("zhouli");
+  const [mode, setMode] = useState<ZhouliMode | DaiyuMode>("gentle");
+  const [level, setLevel] = useState<ZhouliLevel | DaiyuLevel>("standard");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingIndex, setLoadingIndex] = useState(0);
@@ -287,15 +339,24 @@ export default function Home() {
   const resultRef = useRef<HTMLDivElement>(null);
   const cardImageRef = useRef<HTMLImageElement | null>(null);
 
+  const isDaiyu = persona === "daiyu";
+  const currentModes = isDaiyu ? daiyuModes : modes;
+  const currentLevels = isDaiyu ? daiyuLevels : levels;
+
   const selectedMode = useMemo(
-    () => modes.find((item) => item.id === mode) ?? modes[0],
-    [mode],
+    () => currentModes.find((item) => item.id === mode) ?? currentModes[0],
+    [mode, currentModes],
+  );
+
+  const selectedLevelTitle = useMemo(
+    () => currentLevels.find((item) => item.id === level)?.title ?? (isDaiyu ? "清怨" : "成礼"),
+    [level, currentLevels, isDaiyu],
   );
 
   useEffect(() => {
     if (!loading) return;
     const timer = window.setInterval(() => {
-      setLoadingIndex((current) => (current + 1) % loadingLines.length);
+      setLoadingIndex((current) => (current + 1) % loadingLines[persona].length);
     }, 1300);
     return () => window.clearInterval(timer);
   }, [loading]);
@@ -388,7 +449,7 @@ export default function Home() {
 
     try {
       const response = await fetchTranslateWithRetry(
-        { text: text.trim(), mode, level },
+        { text: text.trim(), mode, level, persona },
         getClientId(),
       );
 
@@ -525,7 +586,7 @@ export default function Home() {
     if (!canvasContext) return;
     const ctx: CanvasRenderingContext2D = canvasContext;
 
-    const levelTitle = levels.find((item) => item.id === level)?.title ?? "成礼";
+    const levelTitle = selectedLevelTitle;
 
     function drawPaperGrain() {
       ctx.save();
@@ -608,41 +669,50 @@ export default function Home() {
       ctx.restore();
     }
 
+    const isDaiyuCard = persona === "daiyu";
     const assemblyImage = cardImageRef.current;
 
+    const cardBackgroundColors = isDaiyuCard
+      ? ["#ece5db", "#e3d8c9", "#d1c6b9"]
+      : ["#f7eedf", "#efe0c7", "#dbc7a8"];
     const background = ctx.createLinearGradient(0, 0, 0, height);
-    background.addColorStop(0, "#f7eedf");
-    background.addColorStop(0.48, "#efe0c7");
-    background.addColorStop(1, "#dbc7a8");
+    background.addColorStop(0, cardBackgroundColors[0]);
+    background.addColorStop(0.48, cardBackgroundColors[1]);
+    background.addColorStop(1, cardBackgroundColors[2]);
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, width, height);
 
     if (assemblyImage) {
       ctx.save();
       ctx.globalAlpha = 0.12;
-      ctx.filter = "grayscale(0.35) sepia(0.38)";
+      ctx.filter = isDaiyuCard ? "grayscale(0.45) saturate(0.5)" : "grayscale(0.35) sepia(0.38)";
       const imageWidth = width * 1.2;
       const imageHeight = (imageWidth * assemblyImage.height) / assemblyImage.width;
       ctx.drawImage(assemblyImage, -78, 74, imageWidth, imageHeight);
       ctx.restore();
 
+      const washColors = isDaiyuCard
+        ? ["rgba(234, 225, 215, 0.38)", "rgba(225, 214, 200, 0.74)", "rgba(207, 196, 182, 0.5)"]
+        : ["rgba(247, 238, 223, 0.38)", "rgba(245, 235, 217, 0.74)", "rgba(223, 202, 170, 0.5)"];
       const wash = ctx.createLinearGradient(0, 0, 0, height);
-      wash.addColorStop(0, "rgba(247, 238, 223, 0.38)");
-      wash.addColorStop(0.36, "rgba(245, 235, 217, 0.74)");
-      wash.addColorStop(1, "rgba(223, 202, 170, 0.5)");
+      wash.addColorStop(0, washColors[0]);
+      wash.addColorStop(0.36, washColors[1]);
+      wash.addColorStop(1, washColors[2]);
       ctx.fillStyle = wash;
       ctx.fillRect(0, 0, width, height);
     }
 
     drawPaperGrain();
 
+    const watermarkChar = isDaiyuCard ? "颦" : "礼";
+    const watermarkColor = isDaiyuCard ? "#7a5c5a" : "#8c342a";
     ctx.save();
     ctx.globalAlpha = 0.045;
-    ctx.fillStyle = "#8c342a";
+    ctx.fillStyle = watermarkColor;
     ctx.font = '700 520px "Songti SC", "STSong", serif';
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("礼", width / 2, height / 2 + 12);
+    ctx.fillText(watermarkChar, width / 2, height / 2 + 12);
     ctx.restore();
 
     ctx.strokeStyle = "rgba(102, 78, 48, 0.34)";
@@ -653,48 +723,109 @@ export default function Home() {
     ctx.strokeStyle = "rgba(102, 78, 48, 0.2)";
     ctx.strokeRect(66, 66, width - 132, height - 132);
 
-    drawCorner(58, 58, 1, 1);
-    drawCorner(width - 58, 58, -1, 1);
-    drawCorner(58, height - 58, 1, -1);
-    drawCorner(width - 58, height - 58, -1, -1);
+    if (isDaiyuCard) {
+      const cornerColor = "rgba(100, 85, 75, 0.35)";
+      ctx.save();
+      ctx.strokeStyle = cornerColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(58, 112); ctx.lineTo(58, 58); ctx.lineTo(112, 58);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(100, 85, 75, 0.18)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(72, 112); ctx.lineTo(72, 72); ctx.lineTo(112, 72);
+      ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.translate(width, 0);
+      ctx.scale(-1, 1);
+      ctx.strokeStyle = cornerColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(58, 112); ctx.lineTo(58, 58); ctx.lineTo(112, 58);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(100, 85, 75, 0.18)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(72, 112); ctx.lineTo(72, 72); ctx.lineTo(112, 72);
+      ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.translate(0, height);
+      ctx.scale(1, -1);
+      ctx.strokeStyle = cornerColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(58, 112); ctx.lineTo(58, 58); ctx.lineTo(112, 58);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(100, 85, 75, 0.18)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(72, 112); ctx.lineTo(72, 72); ctx.lineTo(112, 72);
+      ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      ctx.translate(width, height);
+      ctx.scale(-1, -1);
+      ctx.strokeStyle = cornerColor;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(58, 112); ctx.lineTo(58, 58); ctx.lineTo(112, 58);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(100, 85, 75, 0.18)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(72, 112); ctx.lineTo(72, 72); ctx.lineTo(112, 72);
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      drawCorner(58, 58, 1, 1);
+      drawCorner(width - 58, 58, -1, 1);
+      drawCorner(58, height - 58, 1, -1);
+      drawCorner(width - 58, height - 58, -1, -1);
+    }
 
     const panelHeight = height - bodyTop - 216;
-    ctx.fillStyle = "rgba(255, 249, 238, 0.7)";
+    const panelColor = isDaiyuCard ? "rgba(244, 238, 229, 0.75)" : "rgba(255, 249, 238, 0.7)";
+    ctx.fillStyle = panelColor;
     ctx.fillRect(104, bodyTop - 28, width - 208, panelHeight);
     ctx.strokeStyle = "rgba(103, 78, 48, 0.2)";
     ctx.lineWidth = 1.5;
     ctx.strokeRect(104, bodyTop - 28, width - 208, panelHeight);
-    ctx.strokeStyle = "rgba(158, 50, 40, 0.18)";
+    ctx.strokeStyle = isDaiyuCard ? "rgba(130, 95, 85, 0.18)" : "rgba(158, 50, 40, 0.18)";
     ctx.beginPath();
     ctx.moveTo(textX - 34, bodyTop + 36);
     ctx.lineTo(textX - 34, bodyTop + panelHeight - 78);
     ctx.stroke();
 
-    drawSeal(106, 92, 104, "礼");
+    const sealColor = isDaiyuCard ? "#8c4a42" : "#9e3228";
+    drawSeal(106, 92, 104, isDaiyuCard ? "颦" : "礼");
 
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = "#211d18";
     ctx.font = '700 72px "Songti SC", "STSong", serif';
-    ctx.fillText("合乎周礼", 238, 137);
+    ctx.fillText(isDaiyuCard ? "潇湘评" : "合乎周礼", 238, 137);
     ctx.fillStyle = "#7c6d59";
     ctx.font = '26px "Songti SC", "STSong", serif';
-    ctx.fillText("把寻常的话，说得有礼有据", 242, 183);
-    ctx.fillStyle = "rgba(136, 48, 39, 0.86)";
+    ctx.fillText(isDaiyuCard ? "把寻常的话，说得一针见血" : "把寻常的话，说得有礼有据", 242, 183);
+    ctx.fillStyle = isDaiyuCard ? "rgba(130, 80, 70, 0.86)" : "rgba(136, 48, 39, 0.86)";
     ctx.font = '600 15px "PingFang SC", sans-serif';
     ctx.letterSpacing = "0.12em";
-    ctx.fillText("ZHOU LI · RITE NOTE", 244, 218);
+    ctx.fillText(isDaiyuCard ? "DAI YU · REMARK" : "ZHOU LI · RITE NOTE", 244, 218);
     ctx.letterSpacing = "0";
 
     drawVerticalText(
-      "言之成礼",
+      isDaiyuCard ? "言之如匕" : "言之成礼",
       width - 124,
       92,
       34,
       '600 24px "Songti SC", serif',
-      "rgba(136, 48, 39, 0.86)",
+      isDaiyuCard ? "rgba(130, 80, 70, 0.86)" : "rgba(136, 48, 39, 0.86)",
     );
-    ctx.strokeStyle = "rgba(158, 50, 40, 0.78)";
+    const dividerColor = isDaiyuCard ? "rgba(130, 95, 85, 0.78)" : "rgba(158, 50, 40, 0.78)";
+    ctx.strokeStyle = dividerColor;
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(106, 258);
@@ -705,6 +836,7 @@ export default function Home() {
     ctx.beginPath();
     ctx.moveTo(106, 264);
     ctx.lineTo(width - 106, 264);
+    ctx.stroke();
     ctx.stroke();
 
     ctx.fillStyle = "#2b241d";
@@ -754,23 +886,23 @@ export default function Home() {
     ctx.stroke();
     ctx.restore();
 
-    ctx.fillStyle = "#9e3228";
+    ctx.fillStyle = isDaiyuCard ? "#7a5c5a" : "#9e3228";
     ctx.font = '600 25px "Songti SC", serif';
     ctx.textAlign = "left";
-    ctx.fillText(`礼制 · ${selectedMode.title} · ${levelTitle}`, 112, height - 118);
+    ctx.fillText(`${isDaiyuCard ? "语式" : "礼制"} · ${selectedMode.title} · ${levelTitle}`, 112, height - 118);
     ctx.fillStyle = "#7a6d5b";
     ctx.font = '22px "Songti SC", serif';
-    ctx.fillText("一言既出，众贤共阅", 112, height - 80);
+    ctx.fillText(isDaiyuCard ? "非关风月，只问真心" : "一言既出，众贤共阅", 112, height - 80);
 
     const footerSealSize = 66;
     const footerSealX = width - 176;
-    drawSeal(footerSealX, height - 151, footerSealSize, "善");
+    drawSeal(footerSealX, height - 151, footerSealSize, isDaiyuCard ? "潇" : "善");
     ctx.textAlign = "right";
     ctx.fillStyle = "#7a6d5b";
     ctx.font = '22px "Songti SC", serif';
-    ctx.fillText("合乎周礼 · 礼官署录", footerSealX - 28, height - 101);
+    ctx.fillText(isDaiyuCard ? "潇湘馆 · 颦卿偶记" : "合乎周礼 · 礼官署录", footerSealX - 28, height - 101);
     ctx.font = '15px "PingFang SC", sans-serif';
-    ctx.fillText("生成之文，可入席陈说", footerSealX - 28, height - 74);
+    ctx.fillText(isDaiyuCard ? "句句性情，不与外人道" : "生成之文，可入席陈说", footerSealX - 28, height - 74);
 
     const link = document.createElement("a");
     link.download = buildCardDownloadFilename(levelTitle, new Date(), result);
@@ -779,78 +911,82 @@ export default function Home() {
   }
 
   return (
-    <main>
+    <main data-persona={persona}>
       <div className="page-noise" aria-hidden="true" />
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="合乎周礼首页">
-          <span className="brand-seal">礼</span>
+        <a className="brand" href="#top" aria-label={isDaiyu ? "潇湘评首页" : "合乎周礼首页"}>
+          <span className="brand-seal">{isDaiyu ? "颦" : "礼"}</span>
           <span>
-            <strong>合乎周礼</strong>
-            <small>ZHOU LI</small>
+            <strong>{isDaiyu ? "潇湘评" : "合乎周礼"}</strong>
+            <small>{isDaiyu ? "DAI YU" : "ZHOU LI"}</small>
           </span>
         </a>
         <nav aria-label="页面导航">
-          <a href="#translator">制礼</a>
-          <a href="#skill">纳礼</a>
-          <a href="#principles">礼法</a>
+          <a href="#translator">{isDaiyu ? "制语" : "制礼"}</a>
+          <a href="#skill">{isDaiyu ? "纳语" : "纳礼"}</a>
+          <a href="#principles">{isDaiyu ? "语法" : "礼法"}</a>
           <a href="#about">缘起</a>
         </nav>
-        <span className="header-note">大周礼时代 · 试行本</span>
+        <span className="header-note">{isDaiyu ? "潇湘馆 · 颦卿偶记" : "大周礼时代 · 试行本"}</span>
       </header>
 
       <section className="hero" id="top">
         <div className="hero-kicker">
           <span />
-          兼研百段热评与古代典籍译文
+          {isDaiyu ? "读透世情，一语中的" : "兼研百段热评与古代典籍译文"}
           <span />
         </div>
         <h1>
-          把寻常的话
+          {isDaiyu ? "寻常不过一句话" : "把寻常的话"}
           <br />
-          <em>说得有礼有据</em>
+          <em>{isDaiyu ? "说得一针见血" : "说得有礼有据"}</em>
         </h1>
         <p className="hero-copy">
-          现代白话为骨，典籍译文为法。
+          {isDaiyu ? "冷眼看人，热肠对己。" : "现代白话为骨，典籍译文为法。"}
           <br />
-          输入一句话，请大儒替你讲得有礼有据。
+          {isDaiyu ? "输入一句话，请颦卿替你说得透彻。" : "输入一句话，请大儒替你讲得有礼有据。"}
         </p>
         <a className="hero-cta" href="#translator">
-          入席问礼
+          {isDaiyu ? "入馆制语" : "入席问礼"}
           <Icon name="arrow" />
         </a>
         <div className="hero-orbit orbit-one" aria-hidden="true">
-          <span>礼</span>
+          <span>{isDaiyu ? "颦" : "礼"}</span>
         </div>
         <div className="hero-orbit orbit-two" aria-hidden="true">
-          <span>乐</span>
+          <span>{isDaiyu ? "潇" : "乐"}</span>
         </div>
-        <div className="hero-side-note left">克己复礼</div>
-        <div className="hero-side-note right">文质彬彬</div>
+        <div className="hero-side-note left">{isDaiyu ? "质本洁来" : "克己复礼"}</div>
+        <div className="hero-side-note right">{isDaiyu ? "还洁去" : "文质彬彬"}</div>
       </section>
 
       <figure className="assembly-section" aria-labelledby="assembly-title">
         <div className="assembly-frame">
-          <Image
-            className="assembly-image"
-            src="/images/zhouli-assembly.webp"
-            alt="水墨画中，众人围坐听一位长者从容陈说"
-            width={2396}
-            height={1500}
-            sizes="(max-width: 680px) 100vw, (max-width: 1500px) 94vw, 1400px"
-            loading="eager"
-          />
+          {isDaiyu ? (
+            <div className="assembly-no-image" aria-hidden="true" />
+          ) : (
+            <Image
+              className="assembly-image"
+              src="/images/zhouli-assembly.webp"
+              alt="水墨画中，众人围坐听一位长者从容陈说"
+              width={2396}
+              height={1500}
+              sizes="(max-width: 680px) 100vw, (max-width: 1500px) 94vw, 1400px"
+              loading="eager"
+            />
+          )}
           <div className="assembly-wash" aria-hidden="true" />
           <figcaption className="assembly-inscription">
             <span className="assembly-seal" aria-hidden="true">
-              善
+              {isDaiyu ? "颦" : "善"}
             </span>
             <div>
-              <p>诸贤列席 · 一言待陈</p>
-              <h2 id="assembly-title">有话，请当众说个明白</h2>
+              <p>{isDaiyu ? "潇湘馆 · 独坐沉吟" : "诸贤列席 · 一言待陈"}</p>
+              <h2 id="assembly-title">{isDaiyu ? "有话，不如说到透亮" : "有话，请当众说个明白"}</h2>
               <span>
-                今日不论大事小事，只要心中有话，
+                {isDaiyu ? "这世间的事，原也不必绕那么多弯子" : "今日不论大事小事，只要心中有话，"}
                 <br />
-                都可向前一步，请众人一同评理。
+                {isDaiyu ? "一针见血，总好过虚与委蛇。" : "都可向前一步，请众人一同评理。"}
               </span>
             </div>
           </figcaption>
@@ -858,11 +994,11 @@ export default function Home() {
           <span className="assembly-corner corner-bottom" aria-hidden="true" />
         </div>
         <div className="assembly-footnote" aria-hidden="true">
-          <span>观其言</span>
+          <span>{isDaiyu ? "察其伪" : "观其言"}</span>
           <i />
-          <span>正其名</span>
+          <span>{isDaiyu ? "戳其虚" : "正其名"}</span>
           <i />
-          <span>然后成礼</span>
+          <span>{isDaiyu ? "还其真" : "然后成礼"}</span>
         </div>
       </figure>
 
@@ -872,8 +1008,8 @@ export default function Home() {
             <i>壹</i>
           </span>
           <div>
-            <p>一言入席，百礼相生</p>
-            <h2>请说人话，再成周礼</h2>
+            <p>{isDaiyu ? "一语入笺，百味俱陈" : "一言入席，百礼相生"}</p>
+            <h2>{isDaiyu ? "说人话，再成潇湘语" : "请说人话，再成周礼"}</h2>
           </div>
         </div>
 
@@ -887,6 +1023,43 @@ export default function Home() {
               <span className={`character-count ${text.length > 280 ? "warning" : ""}`}>
                 {text.length} / 300
               </span>
+            </div>
+
+            <div className="persona-tabs" role="tablist" aria-label="选择人设">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={persona === "zhouli"}
+                className={persona === "zhouli" ? "active" : ""}
+                onClick={() => {
+                  if (persona === "zhouli") return;
+                  setPersona("zhouli");
+                  setMode("gentle");
+                  setLevel("standard");
+                  setResult("");
+                  setError("");
+                }}
+              >
+                <span className="persona-tab-mark">礼</span>
+                <span>周礼</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={persona === "daiyu"}
+                className={persona === "daiyu" ? "active" : ""}
+                onClick={() => {
+                  if (persona === "daiyu") return;
+                  setPersona("daiyu");
+                  setMode("playful");
+                  setLevel("standard");
+                  setResult("");
+                  setError("");
+                }}
+              >
+                <span className="persona-tab-mark">颦</span>
+                <span>黛玉</span>
+              </button>
             </div>
 
             <textarea
@@ -920,7 +1093,7 @@ export default function Home() {
             </div>
 
             <div className="mode-grid" role="radiogroup" aria-label="选择说话方式">
-              {modes.map((item) => (
+              {currentModes.map((item) => (
                 <button
                   type="button"
                   role="radio"
@@ -940,11 +1113,11 @@ export default function Home() {
 
             <div className="level-field">
               <div>
-                <span className="field-title">礼制深浅</span>
-                <span className="field-help">由短评到长篇辩经</span>
+                <span className="field-title">{isDaiyu ? "篇幅深浅" : "礼制深浅"}</span>
+                <span className="field-help">{isDaiyu ? "由浅愁到伤逝" : "由短评到长篇辩经"}</span>
               </div>
               <div className="level-switch" role="radiogroup" aria-label="选择生成长度">
-                {levels.map((item) => (
+                {currentLevels.map((item) => (
                   <button
                     type="button"
                     role="radio"
@@ -970,7 +1143,7 @@ export default function Home() {
             >
               <span className="button-decoration">◆</span>
               <span>
-                {loading ? loadingLines[loadingIndex] : "请周公制礼"}
+                {loading ? loadingLines[persona][loadingIndex] : (isDaiyu ? "请潇湘馆制语" : "请周公制礼")}
               </span>
               {loading ? (
                 <span className="loading-dots" aria-hidden="true">
@@ -990,14 +1163,13 @@ export default function Home() {
           >
             <div className="result-topline">
               <div>
-                <span className="panel-label inverse">成礼</span>
+                <span className="panel-label inverse">{isDaiyu ? "潇湘" : "成礼"}</span>
                 <span className="result-style">
-                  {selectedMode.title} ·{" "}
-                  {levels.find((item) => item.id === level)?.title}
+                  {selectedMode.title} · {selectedLevelTitle}
                 </span>
               </div>
               <span className="result-seal" aria-hidden="true">
-                合礼
+                {isDaiyu ? "评" : "合礼"}
               </span>
             </div>
 
@@ -1015,7 +1187,7 @@ export default function Home() {
                   </button>
                   <button type="button" onClick={downloadCard}>
                     <Icon name="download" />
-                    生成礼帖
+                    {isDaiyu ? "生成书笺" : "生成礼帖"}
                   </button>
                   <button type="button" onClick={translate}>
                     <Icon name="refresh" />
@@ -1023,7 +1195,7 @@ export default function Home() {
                   </button>
                 </div>
                 <div className="result-meta">
-                  <span>{isDemo ? "本地演示 · 配置 API 后启用大模型" : "DeepSeek 大儒已阅"}</span>
+                  <span>{isDemo ? (isDaiyu ? "潇湘馆演示 · 配置 API 后启用大模型" : "本地演示 · 配置 API 后启用大模型") : (isDaiyu ? "潇湘馆 · 颦卿偶记" : "DeepSeek 大儒已阅")}</span>
                   {remaining !== null && (
                     <span>
                       近10分钟还可问礼 {remaining} 次
@@ -1051,7 +1223,7 @@ export default function Home() {
                 <small>
                   在左侧写下一句话
                   <br />
-                  选择辞气，再请周公制礼
+                  {isDaiyu ? "选择辞气，再请潇湘馆制语" : "选择辞气，再请周公制礼"}
                 </small>
               </div>
             )}
@@ -1074,6 +1246,7 @@ export default function Home() {
         </div>
 
         <div className="skill-layout">
+          <div className="skill-cards-panel">
           <article className="skill-package-card">
             <div className="skill-package-top">
               <span className="skill-knot" aria-hidden="true">礼</span>
@@ -1136,6 +1309,48 @@ export default function Home() {
               <p className="skill-copy-error">{skillCopyError}</p>
             )}
           </article>
+
+          <article className="skill-package-card">
+            <div className="skill-package-top">
+              <span className="skill-knot" aria-hidden="true" style={{backgroundColor:"#8c4a42"}}>颦</span>
+              <div>
+                <small>AI SKILL · 试行第一版</small>
+                <h3>speak-daiyu</h3>
+                <p>一针见血，拒绝表演。</p>
+              </div>
+            </div>
+
+            <div className="skill-capabilities" aria-label="Skill 能力">
+              <span>娇嗔打趣</span>
+              <span>夹枪带棒</span>
+              <span>触景伤怀</span>
+              <span>孤高拒人</span>
+            </div>
+
+            <div className="skill-file-list">
+              <span><i>文</i> SKILL.md</span>
+              <span><i>令</i> agents/openai.yaml</span>
+            </div>
+
+            <div className="skill-actions">
+              <a
+                className="skill-download"
+                href="/downloads/speak-daiyu-skill.zip"
+                download
+              >
+                <span>
+                  <strong>下载林黛玉腔 Skill</strong>
+                  <small>ZIP · 解压即可安装</small>
+                </span>
+                <Icon name="download" />
+              </a>
+            </div>
+
+            <p className="skill-cost-note">
+              复制与下载均免费 · 不含模型或 API · 使用你自己的 AI 算力
+            </p>
+          </article>
+          </div>
 
           <div className="install-guide">
             <div className="install-title">
@@ -1202,73 +1417,103 @@ export default function Home() {
             <i>叁</i>
           </span>
           <div>
-            <p>并非满纸之乎者也</p>
-            <h2>何谓真正合乎周礼？</h2>
+            <p>{isDaiyu ? "并非无端伤春悲秋" : "并非满纸之乎者也"}</p>
+            <h2>{isDaiyu ? "何谓真正黛玉腔？" : "何谓真正合乎周礼？"}</h2>
           </div>
         </div>
         <div className="principle-grid">
-          <article>
-            <span className="principle-index">01</span>
-            <div className="principle-symbol">白</div>
-            <h3>白话为骨</h3>
-            <p>用现代人听得懂的句子，把一个简单意思郑重地解释很多遍。</p>
-          </article>
-          <article>
-            <span className="principle-index">02</span>
-            <div className="principle-symbol">典</div>
-            <h3>故事为证</h3>
-            <p>搬出一位古人、一种草木或一段旧事，为眼前小事建立依据。</p>
-          </article>
-          <article>
-            <span className="principle-index">03</span>
-            <div className="principle-symbol">转</div>
-            <h3>曲折成理</h3>
-            <p>先承认，再转折，最后得出一本正经而略显牵强的结论。</p>
-          </article>
-          <article>
-            <span className="principle-index">04</span>
-            <div className="principle-symbol">问</div>
-            <h3>反问定谳</h3>
-            <p>不急着责骂，只用一句温和反问，让对方自己领会礼法深意。</p>
-          </article>
+          {isDaiyu ? (
+            <>
+              <article>
+                <span className="principle-index">01</span>
+                <div className="principle-symbol">真</div>
+                <h3>不演</h3>
+                <p>拒绝表演体面、讨好和经营人缘。说真话，哪怕对自己不利。</p>
+              </article>
+              <article>
+                <span className="principle-index">02</span>
+                <div className="principle-symbol">刃</div>
+                <h3>一针见血</h3>
+                <p>不绕弯子不论证。选定一处直接戳破，不是先A后B再推导。</p>
+              </article>
+              <article>
+                <span className="principle-index">03</span>
+                <div className="principle-symbol">醒</div>
+                <h3>清醒自嘲</h3>
+                <p>看清自己的处境，不哭不闹不卖惨，只一句"罢了"就收住。</p>
+              </article>
+              <article>
+                <span className="principle-index">04</span>
+                <div className="principle-symbol">止</div>
+                <h3>戛然而止</h3>
+                <p>从不劝人。说完自己的观察就收束，不给你实用建议。</p>
+              </article>
+            </>
+          ) : (
+            <>
+              <article>
+                <span className="principle-index">01</span>
+                <div className="principle-symbol">白</div>
+                <h3>白话为骨</h3>
+                <p>用现代人听得懂的句子，把一个简单意思郑重地解释很多遍。</p>
+              </article>
+              <article>
+                <span className="principle-index">02</span>
+                <div className="principle-symbol">典</div>
+                <h3>故事为证</h3>
+                <p>搬出一位古人、一种草木或一段旧事，为眼前小事建立依据。</p>
+              </article>
+              <article>
+                <span className="principle-index">03</span>
+                <div className="principle-symbol">转</div>
+                <h3>曲折成理</h3>
+                <p>先承认，再转折，最后得出一本正经而略显牵强的结论。</p>
+              </article>
+              <article>
+                <span className="principle-index">04</span>
+                <div className="principle-symbol">问</div>
+                <h3>反问定谳</h3>
+                <p>不急着责骂，只用一句温和反问，让对方自己领会礼法深意。</p>
+              </article>
+            </>
+          )}
         </div>
       </section>
 
       <section className="about-section" id="about">
         <div className="about-seal" aria-hidden="true">
-          <span>百</span>
-          <span>评</span>
+          <span>{isDaiyu ? "颦" : "百"}</span>
+          <span>{isDaiyu ? "心" : "评"}</span>
         </div>
         <div>
-          <span className="eyebrow">缘起</span>
-          <h2>从一百个视频的评论区，也从古代典籍的译文里，重新学会说话。</h2>
+          <span className="eyebrow">{isDaiyu ? "颦心" : "缘起"}</span>
+          <h2>{isDaiyu ? "从世故人情里，也从曹雪芹的句子里，学一针见血地说话。" : "从一百个视频的评论区，也从古代典籍的译文里，重新学会说话。"}</h2>
         </div>
         <p>
-          我们观察了“大周礼时代”近期一百个相关视频中的高赞评论，
-          也参考《周礼》《论语》《孟子》《出师表》《桃花源记》等常见篇目的白话译文：
-          真正受欢迎的不是晦涩古文，而是那种曾在课文旁边见过的翻译腔。
-          这个工具保留那份一本正经的幽默，也尽量让每个名分有来处、每个道理听得懂。
+          {isDaiyu
+            ? "林黛玉从不是多愁善感的标签。她是曹雪芹安放真的容器——在一个人人都在表演体面、算计利害的大家族里，她是唯一拒绝表演的人。她的犀利、伤感、孤高，都是这份不肯演的不同表现。这个工具捕捉那份清醒的锋芒：不绕弯子，不讨好任何人，一句话就把虚伪戳穿。"
+            : "我们观察了大周礼时代近期一百个相关视频中的高赞评论，也参考《周礼》《论语》《孟子》《出师表》《桃花源记》等常见篇目的白话译文：真正受欢迎的不是晦涩古文，而是那种曾在课文旁边见过的翻译腔。这个工具保留那份一本正经的幽默，也尽量让每个名分有来处、每个道理听得懂。"}
         </p>
       </section>
 
       <footer>
         <div className="brand footer-brand">
-          <span className="brand-seal">礼</span>
+          <span className="brand-seal">{isDaiyu ? "颦" : "礼"}</span>
           <span>
-            <strong>合乎周礼</strong>
-            <small>言之有物，戏而有度</small>
+            <strong>{isDaiyu ? "潇湘评" : "合乎周礼"}</strong>
+            <small>{isDaiyu ? "言之如匕，刺破虚伪" : "言之有物，戏而有度"}</small>
           </span>
         </div>
         <div className="footer-note">
-          <p>本工具用于语言娱乐与文化创作，生成内容请自行判断与核实。</p>
+          <p>{isDaiyu ? "本工具用于语言娱乐与文化创作，生成内容请自行判断与核实。" : "本工具用于语言娱乐与文化创作，生成内容请自行判断与核实。"}</p>
           <p>
             若此器有用，可回{" "}
             <a href={originalVideoUrl} target="_blank" rel="noreferrer">
               原视频
             </a>{" "}
-            赐一赞；若有失礼处，亦可在评论区进谏。
+            {isDaiyu ? "赐一赞；若有失语处，亦可在评论区斧正。" : "赐一赞；若有失礼处，亦可在评论区进谏。"}
           </p>
-          <p className="footer-sponsor">礼席虚位，以待良朋。合作可循原视频寻制礼者。</p>
+          <p className="footer-sponsor">{isDaiyu ? "潇湘馆门虚掩，以待知音。" : "礼席虚位，以待良朋。合作可循原视频寻制礼者。"}</p>
         </div>
         <div className="footer-right">
           <span>原网站作者 Aspirin0000 · 二〇二六</span>
@@ -1276,7 +1521,7 @@ export default function Home() {
             href={originalVideoUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label="合乎周礼 B 站原视频"
+            aria-label={isDaiyu ? "合乎周礼 B 站原视频" : "合乎周礼 B 站原视频"}
           >
             B站原视频
           </a>
@@ -1284,7 +1529,7 @@ export default function Home() {
             href={githubUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label="合乎周礼官方 GitHub 仓库"
+            aria-label={isDaiyu ? "合乎周礼官方 GitHub 仓库" : "合乎周礼官方 GitHub 仓库"}
           >
             官方开源仓库
           </a>

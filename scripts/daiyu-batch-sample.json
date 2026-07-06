@@ -1,0 +1,91 @@
+{
+  "description": "黛玉腔调 batch 测试样本（2025-07-06）",
+  "summary": {
+    "total": 12,
+    "modeNames": {
+      "playful": "娇嗔打趣",
+      "sharp": "夹枪带棒",
+      "wistful": "触景伤怀",
+      "aloof": "孤高拒人"
+    },
+    "levelNames": {
+      "light": "浅愁",
+      "standard": "清怨",
+      "grand": "伤逝"
+    }
+  },
+  "results": [
+    {
+      "text": "疯狂星期四，谁愿请我一食",
+      "mode": "playful",
+      "level": "light",
+      "persona": "daiyu"
+    },
+    {
+      "text": "老板说年轻人要多吃苦，我该怎么回",
+      "mode": "playful",
+      "level": "standard",
+      "persona": "daiyu"
+    },
+    {
+      "text": "她今天穿了新裙子，大家都在夸，就我没说话",
+      "mode": "sharp",
+      "level": "light",
+      "persona": "daiyu"
+    },
+    {
+      "text": "别人都去团建了，没叫我",
+      "mode": "sharp",
+      "level": "standard",
+      "persona": "daiyu"
+    },
+    {
+      "text": "他说我太敏感了，想太多",
+      "mode": "sharp",
+      "level": "grand",
+      "persona": "daiyu"
+    },
+    {
+      "text": "天气冷冷热热的，叫人心里也不安定",
+      "mode": "wistful",
+      "level": "light",
+      "persona": "daiyu"
+    },
+    {
+      "text": "很久没联系的老朋友突然发消息，原来是让我帮忙",
+      "mode": "wistful",
+      "level": "standard",
+      "persona": "daiyu"
+    },
+    {
+      "text": "热闹是别人的，我什么也没有",
+      "mode": "wistful",
+      "level": "grand",
+      "persona": "daiyu"
+    },
+    {
+      "text": "这事我不想再管了，别来找我",
+      "mode": "aloof",
+      "level": "light",
+      "persona": "daiyu"
+    },
+    {
+      "text": "你的好意我心领了，但不必了",
+      "mode": "aloof",
+      "level": "standard",
+      "persona": "daiyu"
+    },
+    {
+      "text": "他们说要帮我，可我知道不过是客套话",
+      "mode": "aloof",
+      "level": "grand",
+      "persona": "daiyu"
+    },
+    {
+      "text": "我靠，这人是不是有病",
+      "mode": "sharp",
+      "level": "standard",
+      "persona": "daiyu"
+    }
+  ]
+}
