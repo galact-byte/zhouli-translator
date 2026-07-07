@@ -145,6 +145,24 @@ const daiyuLevels: Array<{
   { id: "standard", title: "清怨", description: "一次转折，恰如其分" },
   { id: "grand", title: "伤逝", description: "从小事推到命运认知" },
 ];
+// 黛玉的方向开关（对应周礼的问礼/释礼）
+const daiyuDirections: Array<{
+  id: ZhouliDirection;
+  title: string;
+  description: string;
+}> = [
+  {
+    id: "to_zhouli",
+    title: "拟颦",
+    description: "白话入笺，化成黛玉体",
+  },
+  {
+    id: "to_plain",
+    title: "释颦",
+    description: "黛玉体，翻回正常话",
+  },
+];
+
 
 const plainLevels: Array<{
   id: ZhouliLevel;
@@ -168,6 +186,18 @@ const plainExamples = [
   "我曾听闻，古时贤人设宴待客，必先派人在门口把守，不是要拒人于门外，而是怕那些不讲礼数的人挤进来，把筵席弄得一片狼藉，让真正赴宴的宾客连坐的地方都没有。如今你做这个网站，特意规定问礼的次数，表面看是设了关卡，细想之下，这不正是效法古人的门吏之责吗？那些滥用脚本、反复闯入的人，好比不请自来的闹客，失了“信”与“节”的本分；而你设下这道礼法，恰是为了保全所有参加者的体面与通畅。这样看来，你虽然拦住了几个人，却护住了整个宴席的秩序，难道不正是接近君子分内的用心吗？",
   "我听说，从前有个贤人，每逢节令便设宴款待众人，但从不白吃白喝。他常说：“食者，人之大欲，但若无名分，便失了体统。”今日是疯狂星期四，若有人愿请我一食，这便好比当年宴席上，主客之间以礼相待：主家尽慷慨之责，宾客受馈赠之恩，两下里都得了体面。但若无人相请，我自去买了来吃，也不算失礼，毕竟食取于己，名分自足。这样看来，请与不请，都不妨事；只是若有人请了，我便当道一声谢，这难道不就是合乎周礼了吗？",
   "我听闻，人若见了天上云朵飘过，总是忍不住伸手去够。当年有人看着山间雾气，便想着能踏云而行、乘雾而去，这原是人心对自在逍遥的一点念想。今日我看到这云，心中也生出一种欢喜，仿佛那云里头藏着可以游玩的世界——我听说，那叫原神。可抬头看天，云终究是云，不能真的踏上去；于是我转而想到，既然云能托起我的念想，那云原神，大约就是让人在云上玩耍的意思吧。这样看来，我这般心心念念地想玩，难道不也是合乎礼法的、对自在之心的一次追慕吗？",
+];
+
+const daiyuExamples = [
+  "天气一时冷一时热，倒叫人心里也定不下来",
+  "朋友总说改天请我吃饭，可这改天到底是哪天",
+  "大家都夸他会做人，偏我瞧着只觉得累",
+];
+
+const daiyuPlainExamples = [
+  "我原不是那等嘴馋要人请客的人，只是这话说出来，倒要看看谁肯搭这个茬儿。罢了，没人应也不打紧，我自己去买便是。",
+  "你们只管热闹你们的，我在这儿冷眼瞧着，原也不指望谁能把我这点心思放在眼里——横竖到头来，也不过是我自己记着罢了。",
+  "她说这话时笑得那样好看，我却半个字都不肯信。偏生这世上信她的人多，倒显得我一个人多心了。",
 ];
 
 const originalVideoUrl =
@@ -430,21 +460,35 @@ export default function Home() {
   const cardImageRef = useRef<HTMLImageElement | null>(null);
 
   const isDaiyu = persona === "daiyu";
-  // 人设(外层) 优先于 方向(内层)：黛玉没有"释礼"
-  const isPlainDirection = !isDaiyu && direction === "to_plain";
+  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颇/释颇
+  const isPlainDirection = direction === "to_plain";
+  const isDaiyuPlain = isDaiyu && isPlainDirection;
 
-  // 三态派生：黛玉 / 释礼 / 周礼正向
+  // 四态派生：黛玉正向 / 黛玉释颇 / 周礼释礼 / 周礼正向
   const currentModes = isDaiyu ? daiyuModes : modes;
   const currentLevels = isDaiyu ? daiyuLevels : levels;
   const activeModes = isPlainDirection ? plainModes : currentModes;
   const activeLevels = isDaiyu ? daiyuLevels : isPlainDirection ? plainLevels : levels;
-  const activeExamples = isPlainDirection ? plainExamples : examples;
+  const currentDirections = isDaiyu ? daiyuDirections : directions;
+  const activeExamples = isDaiyu
+    ? isPlainDirection
+      ? daiyuPlainExamples
+      : daiyuExamples
+    : isPlainDirection
+      ? plainExamples
+      : examples;
   const activeLoadingLines = isDaiyu
     ? loadingLines.daiyu
     : isPlainDirection
       ? plainLoadingLines
       : loadingLines.zhouli;
-  const activeDirectionVerb = isPlainDirection ? "释礼" : "问礼";
+  const activeDirectionVerb = isDaiyu
+    ? isPlainDirection
+      ? "释颇"
+      : "拟颇"
+    : isPlainDirection
+      ? "释礼"
+      : "问礼";
   const inputLimit = isPlainDirection ? 900 : 300;
 
   // 统一网格用：正向语气走 mode，释礼走 plainMode
@@ -1197,7 +1241,6 @@ export default function Home() {
                 onClick={() => {
                   if (persona === "daiyu") return;
                   setPersona("daiyu");
-                  setDirection("to_zhouli");
                   setMode("playful");
                   setLevel("standard");
                   setResult("");
@@ -1209,31 +1252,29 @@ export default function Home() {
               </button>
             </div>
 
-            {!isDaiyu && (
-              <div className="direction-switch" role="radiogroup" aria-label="选择翻译方向">
-                {directions.map((item) => (
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={direction === item.id}
-                    className={direction === item.id ? "active" : ""}
-                    key={item.id}
-                    onClick={() => {
-                      if (direction === item.id) return;
-                      setDirection(item.id);
-                      setText("");
-                      setResult("");
-                      setError("");
-                      setCopied(false);
-                      setIsDemo(false);
-                    }}
-                  >
-                    <strong>{item.title}</strong>
-                    <small>{item.description}</small>
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="direction-switch" role="radiogroup" aria-label="选择翻译方向">
+              {currentDirections.map((item) => (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={direction === item.id}
+                  className={direction === item.id ? "active" : ""}
+                  key={item.id}
+                  onClick={() => {
+                    if (direction === item.id) return;
+                    setDirection(item.id);
+                    setText("");
+                    setResult("");
+                    setError("");
+                    setCopied(false);
+                    setIsDemo(false);
+                  }}
+                >
+                  <strong>{item.title}</strong>
+                  <small>{item.description}</small>
+                </button>
+              ))}
+            </div>
 
             <textarea
               value={text}
@@ -1242,11 +1283,21 @@ export default function Home() {
                 setError("");
               }}
               placeholder={
-                isPlainDirection
-                  ? "粘贴一段周礼体，例如：我听闻，古人设宴……"
-                  : "例如：疯狂星期四，谁愿请我一食才合乎周礼……"
+                isDaiyuPlain
+                  ? "粘贴一段黛玉体，例如：我原不是那等嘴馋的人……"
+                  : isDaiyu
+                    ? "例如：天气冷冷热热的，叫人心里也不安定……"
+                    : isPlainDirection
+                      ? "粘贴一段周礼体，例如：我听闻，古人设宴……"
+                      : "例如：疯狂星期四，谁愿请我一食才合乎周礼……"
               }
-              aria-label={isPlainDirection ? "输入需要释义的周礼体" : "输入需要翻译的原话"}
+              aria-label={
+                isDaiyuPlain
+                  ? "输入需要释义的黛玉体"
+                  : isPlainDirection
+                    ? "输入需要释义的周礼体"
+                    : "输入需要翻译的原话"
+              }
               maxLength={inputLimit}
             />
 
@@ -1291,8 +1342,8 @@ export default function Home() {
 
             <div className="level-field">
               <div>
-                <span className="field-title">{isDaiyu ? "篇幅深浅" : isPlainDirection ? "释义详略" : "礼制深浅"}</span>
-                <span className="field-help">{isDaiyu ? "由浅愁到伤逝" : isPlainDirection ? "由一句人话到分层拆解" : "由短评到长篇辩经"}</span>
+                <span className="field-title">{isPlainDirection ? "释义详略" : isDaiyu ? "篇幅深浅" : "礼制深浅"}</span>
+                <span className="field-help">{isPlainDirection ? "由一句人话到分层拆解" : isDaiyu ? "由浅愁到伤逝" : "由短评到长篇辩经"}</span>
               </div>
               <div className="level-switch" role="radiogroup" aria-label="选择生成长度">
                 {activeLevels.map((item) => (
@@ -1323,11 +1374,13 @@ export default function Home() {
               <span>
                 {loading
                   ? activeLoadingLines[loadingIndex]
-                  : isDaiyu
-                    ? "请潇湘馆制语"
-                    : isPlainDirection
-                      ? "请礼官释义"
-                      : "请周公制礼"}
+                  : isDaiyuPlain
+                    ? "请潇湘馆释颇"
+                    : isDaiyu
+                      ? "请潇湘馆制语"
+                      : isPlainDirection
+                        ? "请礼官释义"
+                        : "请周公制礼"}
               </span>
               {loading ? (
                 <span className="loading-dots" aria-hidden="true">
@@ -1347,14 +1400,14 @@ export default function Home() {
           >
             <div className="result-topline">
               <div>
-                <span className="panel-label inverse">{isDaiyu ? "潇湘" : isPlainDirection ? "释礼" : "成礼"}</span>
+                <span className="panel-label inverse">{isDaiyuPlain ? "释颇" : isDaiyu ? "潇湘" : isPlainDirection ? "释礼" : "成礼"}</span>
                 <span className="result-style">
                   {isPlainDirection ? selectedPlainMode.title : selectedMode.title} ·{" "}
                   {activeLevels.find((item) => item.id === level)?.title}
                 </span>
               </div>
               <span className="result-seal" aria-hidden="true">
-                {isDaiyu ? "评" : isPlainDirection ? "人话" : "合礼"}
+                {isDaiyuPlain ? "人话" : isDaiyu ? "评" : isPlainDirection ? "人话" : "合礼"}
               </span>
             </div>
 
@@ -1413,12 +1466,30 @@ export default function Home() {
               </>
             ) : (
               <div className="empty-result">
-                <span className="empty-glyph">礼</span>
-                <p>{isPlainDirection ? "礼未释，人未懂" : "言未至，礼未成"}</p>
+                <span className="empty-glyph">{isDaiyu ? "颇" : "礼"}</span>
+                <p>
+                  {isDaiyuPlain
+                    ? "颇未释，意未明"
+                    : isDaiyu
+                      ? "语未出，情未显"
+                      : isPlainDirection
+                        ? "礼未释，人未懂"
+                        : "言未至，礼未成"}
+                </p>
                 <small>
-                  {isPlainDirection ? "在左侧粘贴一段周礼体" : "在左侧写下一句话"}
+                  {isDaiyuPlain
+                    ? "在左侧粘贴一段黛玉体"
+                    : isPlainDirection
+                      ? "在左侧粘贴一段周礼体"
+                      : "在左侧写下一句话"}
                   <br />
-                  {isDaiyu ? "选择辞气，再请潇湘馆制语" : isPlainDirection ? "请礼官翻回正常人话" : "选择辞气，再请周公制礼"}
+                  {isDaiyuPlain
+                    ? "请潇湘馆翻回正常人话"
+                    : isDaiyu
+                      ? "选择辞气，再请潇湘馆制语"
+                      : isPlainDirection
+                        ? "请礼官翻回正常人话"
+                        : "选择辞气，再请周公制礼"}
                 </small>
               </div>
             )}
