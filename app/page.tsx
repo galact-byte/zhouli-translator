@@ -664,7 +664,9 @@ export default function Home() {
   async function copySkillPrompt() {
 	    if (
 	      await writeClipboard(
-	        "使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”改写成强行圆场的小礼；或把一段周礼体释礼，翻回直接人话。",
+	        isDaiyu
+	          ? "使用 $speak-daiyu，把“朋友总说改天请我吃饭，可这改天到底是哪天”说成夹枪带棒的浅愁；或把一段黛玉体释颦，翻回直接人话。"
+	          : "使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”改写成强行圆场的小礼；或把一段周礼体释礼，翻回直接人话。",
 	      )
 	    ) {
       setSkillCopied(true);
@@ -1500,15 +1502,18 @@ export default function Home() {
       <section className="skill-section" id="skill">
         <div className="skill-heading">
           <div>
-            <span className="eyebrow">请礼归家 · 免费下载</span>
-            <h2>把这套礼法，<br />请进你自己的 AI</h2>
+            <span className="eyebrow">{isDaiyu ? "携颦归家 · 免费下载" : "请礼归家 · 免费下载"}</span>
+            <h2>
+              {isDaiyu ? "把这副声口，" : "把这套礼法，"}
+              <br />
+              请进你自己的 AI
+            </h2>
           </div>
-	          <p>
-	            不必每次打开网页，也不消耗本站的 API。
-	            一键复制 Skill 后，直接粘贴到任意 AI 聊天框里就能用；
-	            也可以下载后安装，让自己的 AI
-	            既能问礼成文，也能释礼还意。
-	          </p>
+          <p>
+            {isDaiyu
+              ? "不必每次打开网页，也不消耗本站的 API。一键复制 Skill 后，直接粘贴到任意 AI 聊天框里就能用；也可以下载后安装，让自己的 AI 既能拟颦成句，也能释颦还意。"
+              : "不必每次打开网页，也不消耗本站的 API。一键复制 Skill 后，直接粘贴到任意 AI 聊天框里就能用；也可以下载后安装，让自己的 AI 既能问礼成文，也能释礼还意。"}
+          </p>
         </div>
 
         <div className="skill-layout">
@@ -1652,7 +1657,7 @@ export default function Home() {
                   <p>Codex（macOS / Linux）</p>
                   <code>~/.codex/skills/speak-zhouli</code>
                   <p>Codex（Windows）</p>
-                  <code>%USERPROFILE%\.codex\skills\speak-zhouli</code>
+                  <code>{isDaiyu ? "%USERPROFILE%\.codex\skills\speak-daiyu" : "%USERPROFILE%\.codex\skills\speak-zhouli"}</code>
                 </div>
               </li>
               <li>
@@ -1661,8 +1666,9 @@ export default function Home() {
                   <h4>在对话中点名使用</h4>
                   <div className="prompt-example">
 	                    <p>
-	                      使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”
-	                      改写成强行圆场的小礼；或把一段周礼体释礼，翻回直接人话。
+	                      {isDaiyu
+	                        ? "使用 $speak-daiyu，把“朋友总说改天请我吃饭，可这改天到底是哪天”说成夹枪带棒的浅愁；或把一段黛玉体释颦，翻回直接人话。"
+	                        : "使用 $speak-zhouli，把“疯狂星期四，谁愿请我一食才合乎周礼”改写成强行圆场的小礼；或把一段周礼体释礼，翻回直接人话。"}
 	                    </p>
                     <button type="button" onClick={copySkillPrompt}>
                       <Icon name={skillCopied ? "check" : "copy"} />
