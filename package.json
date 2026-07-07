@@ -1,7 +1,7 @@
 {
   "name": "zhouli-translator",
   "version": "0.1.0",
-  "description": "把寻常的话翻译成合乎周礼的白话翻译腔网站与 Skill 包。",
+  "description": "提供问礼与释礼的周礼体双向翻译网站与 Skill 包。",
   "type": "module",
   "license": "MIT",
   "repository": {
