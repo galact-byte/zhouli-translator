@@ -512,6 +512,39 @@ main {
   background: #c9cec4;
 }
 
+/* 黛玉：深暖砖红 Skill 卡换成冷调墨绿，与冷灰页面同一气质 */
+[data-persona="daiyu"] .skill-package-card {
+  color: #e7e9e2;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 42%),
+    #2f3733;
+  border-color: #232a26;
+  box-shadow: 0 25px 60px rgba(35, 45, 40, 0.22);
+}
+
+[data-persona="daiyu"] .skill-copy-full {
+  color: var(--red-deep);
+  background: #dfe3dc;
+  border-color: #eef0ea;
+  box-shadow:
+    inset 0 0 0 4px #dfe3dc,
+    inset 0 0 0 5px rgba(var(--red-deep-rgb), 0.24);
+}
+
+[data-persona="daiyu"] .skill-copy-full:hover {
+  background: #e8ebe4;
+  box-shadow: 0 12px 28px rgba(35, 45, 40, 0.2);
+}
+
+[data-persona="daiyu"] .install-guide {
+  background: rgba(238, 242, 237, 0.82);
+  box-shadow: inset 0 0 0 7px rgba(238, 242, 237, 0.46);
+}
+
+[data-persona="daiyu"] .install-steps code {
+  color: var(--red-deep);
+}
+
 .assembly-wash {
   position: absolute;
   inset: 0;
