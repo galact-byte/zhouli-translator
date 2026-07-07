@@ -7,6 +7,10 @@
   --red: #9e3228;
   --red-deep: #77251f;
   --red-soft: #c86a59;
+  /* RGB 三元组：供 rgba() 透明度叠加用，随人设切换 */
+  --red-rgb: 158, 50, 40;
+  --red-deep-rgb: 119, 37, 31;
+  --seal-cream: #f8e8c8;
   --bronze: #766a48;
   --line: rgba(70, 57, 41, 0.22);
   --dark: #242622;
@@ -27,6 +31,9 @@
   --red: #8a4b48;
   --red-deep: #653733;
   --red-soft: #a86f6a;
+  --red-rgb: 138, 75, 72;
+  --red-deep-rgb: 101, 55, 51;
+  --seal-cream: #ece6da;
   --bronze: #67705f;
   --line: rgba(60, 72, 68, 0.2);
   --dark: #23272a;
@@ -113,7 +120,7 @@ main {
   height: 46px;
   display: grid;
   place-items: center;
-  color: #f8e8c8;
+  color: var(--seal-cream);
   background: var(--red);
   border: 1px solid var(--red-deep);
   box-shadow: inset 0 0 0 5px var(--red), inset 0 0 0 6px rgba(248, 232, 200, 0.65);
@@ -281,7 +288,7 @@ main {
 .hero-cta:hover {
   transform: translateY(-2px);
   background: var(--red-deep);
-  box-shadow: 0 12px 28px rgba(119, 37, 31, 0.2);
+  box-shadow: 0 12px 28px rgba(var(--red-deep-rgb), 0.2);
 }
 
 .hero-cta svg {
@@ -488,6 +495,23 @@ main {
   background: linear-gradient(-12deg, #cbd0c7 0%, #e0e3dc 100%);
 }
 
+/* 黛玉：将剩余暖调固色面板换成冷调 */
+[data-persona="daiyu"] .skill-section {
+  background:
+    linear-gradient(115deg, rgba(246, 248, 245, 0.66), transparent 48%),
+    #cdd2c9;
+}
+
+[data-persona="daiyu"] .skill-knot {
+  color: var(--red-deep);
+  background: #d5dad0;
+  border-color: #c2c8bd;
+}
+
+[data-persona="daiyu"] .loading-dots i {
+  background: #c9cec4;
+}
+
 .assembly-wash {
   position: absolute;
   inset: 0;
@@ -515,7 +539,7 @@ main {
   flex: none;
   display: grid;
   place-items: center;
-  color: #f8e8c8;
+  color: var(--seal-cream);
   background: var(--red);
   border: 1px solid var(--red-deep);
   box-shadow:
@@ -560,7 +584,7 @@ main {
 .assembly-corner::after {
   content: "";
   position: absolute;
-  background: rgba(158, 50, 40, 0.54);
+  background: rgba(var(--red-rgb), 0.54);
 }
 
 .assembly-corner::before {
@@ -752,7 +776,7 @@ main {
 
 .persona-tabs button.active {
   color: var(--red);
-  background: rgba(158, 50, 40, 0.06);
+  background: rgba(var(--red-rgb), 0.06);
   border-color: var(--red-soft);
 }
 
@@ -794,8 +818,8 @@ main {
 }
 
 .input-panel textarea:focus {
-  border-color: rgba(158, 50, 40, 0.6);
-  box-shadow: 0 0 0 3px rgba(158, 50, 40, 0.06);
+  border-color: rgba(var(--red-rgb), 0.6);
+  box-shadow: 0 0 0 3px rgba(var(--red-rgb), 0.06);
 }
 
 .direction-switch {
@@ -881,8 +905,8 @@ main {
 
 .example-row button:hover {
   color: var(--red);
-  background: rgba(158, 50, 40, 0.04);
-  border-color: rgba(158, 50, 40, 0.34);
+  background: rgba(var(--red-rgb), 0.04);
+  border-color: rgba(var(--red-rgb), 0.34);
 }
 
 .divider {
@@ -923,11 +947,11 @@ main {
 }
 
 .mode-grid button:hover {
-  border-color: rgba(158, 50, 40, 0.38);
+  border-color: rgba(var(--red-rgb), 0.38);
 }
 
 .mode-grid button.active {
-  background: rgba(158, 50, 40, 0.055);
+  background: rgba(var(--red-rgb), 0.055);
   border-color: var(--red);
   box-shadow: inset 3px 0 0 var(--red);
 }
@@ -939,7 +963,7 @@ main {
   display: grid;
   place-items: center;
   color: var(--red);
-  border: 1px solid rgba(158, 50, 40, 0.42);
+  border: 1px solid rgba(var(--red-rgb), 0.42);
   border-radius: 50%;
   font: 600 17px/1 var(--serif);
 }
@@ -1038,7 +1062,7 @@ main {
   box-shadow:
     inset 0 0 0 4px var(--red-deep),
     inset 0 0 0 5px rgba(255, 239, 212, 0.28),
-    0 10px 24px rgba(119, 37, 31, 0.18);
+    0 10px 24px rgba(var(--red-deep-rgb), 0.18);
 }
 
 .translate-button:disabled {
@@ -1053,7 +1077,7 @@ main {
 
 .button-decoration {
   justify-self: start;
-  color: #efcda2;
+  color: var(--seal-cream);
   font-size: 9px;
 }
 
@@ -1233,7 +1257,7 @@ main {
 }
 
 .result-actions button:hover {
-  color: #f7e9ce;
+  color: var(--seal-cream);
   border-color: rgba(239, 220, 188, 0.45);
   background: rgba(255, 255, 255, 0.035);
 }
@@ -1392,7 +1416,7 @@ main {
   border: 1px solid #f0dfc4;
   box-shadow:
     inset 0 0 0 5px #ebd8ba,
-    inset 0 0 0 6px rgba(118, 42, 36, 0.38);
+    inset 0 0 0 6px rgba(var(--red-deep-rgb), 0.38);
   font: 700 34px/1 var(--serif);
   transform: rotate(-3deg);
 }
@@ -1499,7 +1523,7 @@ main {
   border: 1px solid #f5e7cf;
   box-shadow:
     inset 0 0 0 4px #eddcbd,
-    inset 0 0 0 5px rgba(103, 35, 31, 0.24);
+    inset 0 0 0 5px rgba(var(--red-deep-rgb), 0.24);
 }
 
 .skill-download {
@@ -1547,7 +1571,7 @@ main {
 }
 
 .skill-copy-full small {
-  color: rgba(103, 35, 31, 0.58);
+  color: rgba(var(--red-deep-rgb), 0.58);
 }
 
 .skill-download small {
@@ -1648,7 +1672,7 @@ main {
   top: 33px;
   bottom: 0;
   left: 16px;
-  background: rgba(158, 50, 40, 0.22);
+  background: rgba(var(--red-rgb), 0.22);
 }
 
 .install-steps li > span {
@@ -1656,7 +1680,7 @@ main {
   height: 33px;
   display: grid;
   place-items: center;
-  color: #f7e7ca;
+  color: var(--seal-cream);
   background: var(--red);
   border-radius: 50%;
   font: 600 12px/1 var(--serif);
@@ -1680,8 +1704,8 @@ main {
   padding: 5px 8px;
   display: inline-block;
   color: #6d2c25;
-  background: rgba(158, 50, 40, 0.06);
-  border: 1px solid rgba(158, 50, 40, 0.13);
+  background: rgba(var(--red-rgb), 0.06);
+  border: 1px solid rgba(var(--red-rgb), 0.13);
   font: 500 10px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
@@ -1825,7 +1849,7 @@ main {
   place-items: center;
   color: var(--red);
   border: 2px solid var(--red);
-  box-shadow: inset 0 0 0 6px #dcd0bc, inset 0 0 0 7px rgba(158, 50, 40, 0.65);
+  box-shadow: inset 0 0 0 6px #dcd0bc, inset 0 0 0 7px rgba(var(--red-rgb), 0.65);
   font: 700 29px/1 var(--serif);
   transform: rotate(-3deg);
 }
@@ -1900,7 +1924,7 @@ footer > span,
 
 .footer-note a {
   text-decoration: none;
-  border-bottom: 1px solid rgba(165, 64, 50, 0.22);
+  border-bottom: 1px solid rgba(var(--red-rgb), 0.22);
   transition:
     color 180ms ease,
     border-color 180ms ease;
@@ -1908,7 +1932,7 @@ footer > span,
 
 .footer-note a:hover {
   color: var(--red);
-  border-color: rgba(165, 64, 50, 0.5);
+  border-color: rgba(var(--red-rgb), 0.5);
 }
 
 .footer-sponsor {

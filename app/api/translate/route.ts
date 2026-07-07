@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   buildPlainPrompt,
+  buildDaiyuPlainPrompt,
   buildUserPrompt,
   PLAIN_SYSTEM_PROMPT,
+  DAIYU_PLAIN_SYSTEM_PROMPT,
   SYSTEM_PROMPT,
   DAIYU_SYSTEM_PROMPT,
   type Persona,
@@ -244,6 +246,37 @@ function demoPlainResult(text: string, level: ZhouliLevel, plainMode: PlainMode 
     short,
     "删掉礼法包装后，这就是一句正常人能直接听懂的话。",
   ].join("\n");
+}
+
+function daiyuPlainDemoResult(
+  text: string,
+  level: DaiyuLevel,
+  plainMode: PlainMode = "direct",
+) {
+  const normalized = text
+    .replace(/罢了|倒也|偏生|原不是|横竖|我倒不知|花|泪|寄居|颦卵/g, "")
+    .replace(/[，。！？；：、\s]+/g, " ")
+    .trim();
+  const short =
+    stripPlainPreamble(normalized.slice(0, 80)) || "这话其实就是在直接表态。";
+
+  if (level === "light") {
+    return short;
+  }
+
+  if (plainMode === "roast") {
+    return [short, "那些花、泪、罢了，主要是把一句很直的话说得带刺一点。"].join("\n");
+  }
+
+  if (level === "grand") {
+    return [
+      short,
+      "黛玉体的诗意和自嘶，多半是把一份情绪包得含蓄一点。",
+      "拆掉包装后，重点是她的态度和锻芒，不是意象本身。",
+    ].join("\n");
+  }
+
+  return [short, "拆掉黛玉体的诗意包装，这就是一句直接的人话。"].join("\n");
 }
 
 const SHORT_PLAIN_RESULTS: Record<string, string> = {
@@ -751,8 +784,10 @@ export async function POST(request: NextRequest) {
     );
   }
   const isDaiyu = persona === "daiyu";
-  // 黛玉只做正向改写，没有"释黛玉"，故人设优先于方向
-  const isPlainDirection = !isDaiyu && direction === "to_plain";
+  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颇/释颇
+  const isPlainDirection = direction === "to_plain";
+  const isDaiyuPlain = isDaiyu && isPlainDirection;
+  const isZhouliPlain = !isDaiyu && isPlainDirection;
 
   const mode = isDaiyu
     ? VALID_DAIYU_MODES.has(body.mode as DaiyuMode)
@@ -788,7 +823,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const shortPlainResult = isPlainDirection ? getShortPlainResult(text) : "";
+  const shortPlainResult = isZhouliPlain ? getShortPlainResult(text) : "";
   if (shortPlainResult) {
     return NextResponse.json({
       result: shortPlainResult,
@@ -864,14 +899,20 @@ export async function POST(request: NextRequest) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
-    const demoText = isDaiyu
-      ? daiyuDemoResult(text, mode as DaiyuMode, level as DaiyuLevel)
-      : isPlainDirection
-        ? demoPlainResult(text, level, plainMode)
-        : demoResult(text, mode as ZhouliMode, level as ZhouliLevel);
+    const demoText = isDaiyuPlain
+      ? daiyuPlainDemoResult(text, level as DaiyuLevel, plainMode)
+      : isDaiyu
+        ? daiyuDemoResult(text, mode as DaiyuMode, level as DaiyuLevel)
+        : isPlainDirection
+          ? demoPlainResult(text, level, plainMode)
+          : demoResult(text, mode as ZhouliMode, level as ZhouliLevel);
     return NextResponse.json({
       result: demoText,
-      model: isDaiyu ? "潇湘馆演示" : "本地演示",
+      model: isDaiyu
+        ? isDaiyuPlain
+          ? "潇湘馆释读"
+          : "潇湘馆演示"
+        : "本地演示",
       demo: true,
       persona,
       remaining: rate.remaining,
@@ -887,19 +928,23 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: isDaiyu
-            ? DAIYU_SYSTEM_PROMPT
-            : isPlainDirection
-              ? PLAIN_SYSTEM_PROMPT
-              : SYSTEM_PROMPT,
+          content: isDaiyuPlain
+            ? DAIYU_PLAIN_SYSTEM_PROMPT
+            : isDaiyu
+              ? DAIYU_SYSTEM_PROMPT
+              : isPlainDirection
+                ? PLAIN_SYSTEM_PROMPT
+                : SYSTEM_PROMPT,
         },
         {
           role: "user",
-          content: isDaiyu
-            ? buildUserPrompt(text, mode, level, persona)
-            : isPlainDirection
-              ? buildPlainPrompt(text, level, plainMode)
-              : buildUserPrompt(text, mode, level),
+          content: isDaiyuPlain
+            ? buildDaiyuPlainPrompt(text, level as DaiyuLevel, plainMode)
+            : isDaiyu
+              ? buildUserPrompt(text, mode, level, persona)
+              : isPlainDirection
+                ? buildPlainPrompt(text, level, plainMode)
+                : buildUserPrompt(text, mode, level),
         },
       ],
       max_tokens: isPlainDirection
@@ -992,7 +1037,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       result,
-      model: isDaiyu ? "潇湘馆" : process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
+      model: isDaiyu
+        ? isDaiyuPlain
+          ? "潇湘馆释读"
+          : "潇湘馆"
+        : process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
       demo: false,
       usage: data.usage,
       persona,
