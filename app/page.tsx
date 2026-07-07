@@ -389,13 +389,21 @@ export default function Home() {
     image.onerror = () => {
       cardImageRef.current = null;
     };
-    image.src = "/images/zhouli-assembly.webp";
+    image.src = persona === "daiyu" ? "/images/preview.webp" : "/images/zhouli-assembly.webp";
 
     return () => {
       image.onload = null;
       image.onerror = null;
     };
-  }, []);
+  }, [persona]);
+
+  // persona 挂到 <html> 上，才能让 body 背景等根级样式命中黛玉配色变量
+  useEffect(() => {
+    document.documentElement.setAttribute("data-persona", persona);
+    return () => {
+      document.documentElement.removeAttribute("data-persona");
+    };
+  }, [persona]);
 
   function updateRateInfo(data: {
     remaining?: unknown;
@@ -673,7 +681,7 @@ export default function Home() {
     const assemblyImage = cardImageRef.current;
 
     const cardBackgroundColors = isDaiyuCard
-      ? ["#ece5db", "#e3d8c9", "#d1c6b9"]
+      ? ["#dfe2dc", "#d4d8d0", "#c4c8c0"]
       : ["#f7eedf", "#efe0c7", "#dbc7a8"];
     const background = ctx.createLinearGradient(0, 0, 0, height);
     background.addColorStop(0, cardBackgroundColors[0]);
@@ -692,7 +700,7 @@ export default function Home() {
       ctx.restore();
 
       const washColors = isDaiyuCard
-        ? ["rgba(234, 225, 215, 0.38)", "rgba(225, 214, 200, 0.74)", "rgba(207, 196, 182, 0.5)"]
+        ? ["rgba(223, 226, 220, 0.38)", "rgba(212, 216, 208, 0.74)", "rgba(196, 200, 192, 0.5)"]
         : ["rgba(247, 238, 223, 0.38)", "rgba(245, 235, 217, 0.74)", "rgba(223, 202, 170, 0.5)"];
       const wash = ctx.createLinearGradient(0, 0, 0, height);
       wash.addColorStop(0, washColors[0]);
@@ -787,7 +795,7 @@ export default function Home() {
     }
 
     const panelHeight = height - bodyTop - 216;
-    const panelColor = isDaiyuCard ? "rgba(244, 238, 229, 0.75)" : "rgba(255, 249, 238, 0.7)";
+    const panelColor = isDaiyuCard ? "rgba(238, 241, 235, 0.75)" : "rgba(255, 249, 238, 0.7)";
     ctx.fillStyle = panelColor;
     ctx.fillRect(104, bodyTop - 28, width - 208, panelHeight);
     ctx.strokeStyle = "rgba(103, 78, 48, 0.2)";
@@ -963,7 +971,15 @@ export default function Home() {
       <figure className="assembly-section" aria-labelledby="assembly-title">
         <div className="assembly-frame">
           {isDaiyu ? (
-            <div className="assembly-no-image" aria-hidden="true" />
+            <Image
+              className="assembly-image"
+              src="/images/preview.webp"
+              alt="工笔画中，大观园人物各自怕口，黛玉独自凭栏"
+              width={1568}
+              height={461}
+              sizes="(max-width: 680px) 100vw, (max-width: 1500px) 94vw, 1400px"
+              loading="eager"
+            />
           ) : (
             <Image
               className="assembly-image"
