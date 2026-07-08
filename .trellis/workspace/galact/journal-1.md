@@ -16,3 +16,11 @@
 - trellis-check → PASS；design.md §3.6/3.8 已同步更正（原写黛玉用 #8c4a42 印章，现正为黛青）。
 - 验证：`npm run build` / `npm run typecheck` 均通过。
 
+### 黛玉腔“对话化” bug 修复
+
+用户手测发现：`熊哥我做成了，这个要怎么描述` → 黛玉腔回了“你倒来问我了……你且先说给我听听”（把输入当成对黛玉发问并应答，而非改写）。
+
+根因两层：（a）`DAIYU_SYSTEM_PROMPT` 缺“改写而非对话”硬规矩（周礼腔有，黛玉腔无）；（b）`isExpressionRequest` 正则漏 `描述/形容/描写`，输入落到第一人称代写分支。
+
+修：（1）DAIYU_SYSTEM_PROMPT 加规则 15.5（严禁回应/反问用户，发言主体恒为原话说话人）；（2）isExpressionRequest 正则补 描述/描写/形容 变体（共享，周礼黛玉均受益）。trellis-check → PASS（含边缘回归验证）；typecheck+build 通过。design.md §3.9 记录。
+
