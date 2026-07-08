@@ -889,7 +889,7 @@ export default function Home() {
     drawPaperGrain();
 
     const watermarkChar = isDaiyuCard ? "颦" : "礼";
-    const watermarkColor = isDaiyuCard ? "#7a5c5a" : "#8c342a";
+    const watermarkColor = isDaiyuCard ? "#4d605a" : "#8c342a";
     ctx.save();
     ctx.globalAlpha = 0.045;
     ctx.fillStyle = watermarkColor;
@@ -977,13 +977,13 @@ export default function Home() {
     ctx.strokeStyle = "rgba(103, 78, 48, 0.2)";
     ctx.lineWidth = 1.5;
     ctx.strokeRect(104, bodyTop - 28, width - 208, panelHeight);
-    ctx.strokeStyle = isDaiyuCard ? "rgba(130, 95, 85, 0.18)" : "rgba(158, 50, 40, 0.18)";
+    ctx.strokeStyle = isDaiyuCard ? "rgba(69, 96, 90, 0.18)" : "rgba(158, 50, 40, 0.18)";
     ctx.beginPath();
     ctx.moveTo(textX - 34, bodyTop + 36);
     ctx.lineTo(textX - 34, bodyTop + panelHeight - 78);
     ctx.stroke();
 
-    const sealColor = isDaiyuCard ? "#8c4a42" : "#9e3228";
+    const sealColor = isDaiyuCard ? "#45605a" : "#9e3228";
     drawSeal(106, 92, 104, isDaiyuCard ? "颦" : "礼");
 
     ctx.textAlign = "left";
@@ -994,7 +994,7 @@ export default function Home() {
     ctx.fillStyle = "#7c6d59";
     ctx.font = '26px "Songti SC", "STSong", serif';
     ctx.fillText(isDaiyuCard ? "把寻常的话，说得一针见血" : cardSubTitle, 242, 183);
-    ctx.fillStyle = isDaiyuCard ? "rgba(130, 80, 70, 0.86)" : "rgba(136, 48, 39, 0.86)";
+    ctx.fillStyle = isDaiyuCard ? "rgba(69, 96, 90, 0.86)" : "rgba(136, 48, 39, 0.86)";
     ctx.font = '600 15px "PingFang SC", sans-serif';
     ctx.letterSpacing = "0.12em";
     ctx.fillText(isDaiyuCard ? "DAI YU · REMARK" : "ZHOU LI · RITE NOTE", 244, 218);
@@ -1006,9 +1006,9 @@ export default function Home() {
       92,
       34,
       '600 24px "Songti SC", serif',
-      isDaiyuCard ? "rgba(130, 80, 70, 0.86)" : "rgba(136, 48, 39, 0.86)",
+      isDaiyuCard ? "rgba(69, 96, 90, 0.86)" : "rgba(136, 48, 39, 0.86)",
     );
-    const dividerColor = isDaiyuCard ? "rgba(130, 95, 85, 0.78)" : "rgba(158, 50, 40, 0.78)";
+    const dividerColor = isDaiyuCard ? "rgba(69, 96, 90, 0.78)" : "rgba(158, 50, 40, 0.78)";
     ctx.strokeStyle = dividerColor;
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -1070,7 +1070,7 @@ export default function Home() {
     ctx.stroke();
     ctx.restore();
 
-    ctx.fillStyle = isDaiyuCard ? "#7a5c5a" : "#9e3228";
+    ctx.fillStyle = isDaiyuCard ? "#4d605a" : "#9e3228";
     ctx.font = '600 25px "Songti SC", serif';
     ctx.textAlign = "left";
     ctx.fillText(`${isDaiyuCard ? "语式" : cardMetaLabel} · ${isDaiyuCard ? selectedMode.title : cardStyleTitle} · ${levelTitle}`, 112, height - 118);
@@ -1174,7 +1174,7 @@ export default function Home() {
             </span>
             <div>
               <p>{isDaiyu ? "潇湘馆 · 独坐沉吟" : "诸贤列席 · 一言待陈"}</p>
-              <h2 id="assembly-title">{isDaiyu ? "有话，不如说到透亮" : "有话，请当众说个明白"}</h2>
+              <h2 id="assembly-title">{isDaiyu ? "有话，不如说得透彻" : "有话，请当众说个明白"}</h2>
               <span>
                 {isDaiyu ? "这世间的事，原也不必绕那么多弯子" : "今日不论大事小事，只要心中有话，"}
                 <br />
@@ -1518,6 +1518,7 @@ export default function Home() {
 
         <div className="skill-layout">
           <div className="skill-cards-panel">
+          {!isDaiyu && (
           <article className="skill-package-card">
             <div className="skill-package-top">
               <span className="skill-knot" aria-hidden="true">礼</span>
@@ -1580,10 +1581,12 @@ export default function Home() {
               <p className="skill-copy-error">{skillCopyError}</p>
             )}
           </article>
+          )}
 
+          {isDaiyu && (
           <article className="skill-package-card">
             <div className="skill-package-top">
-              <span className="skill-knot" aria-hidden="true" style={{backgroundColor:"#8c4a42"}}>颦</span>
+              <span className="skill-knot" aria-hidden="true">颦</span>
               <div>
                 <small>AI SKILL · 试行第一版</small>
                 <h3>speak-daiyu</h3>
@@ -1621,6 +1624,7 @@ export default function Home() {
               复制与下载均免费 · 不含模型或 API · 使用你自己的 AI 算力
             </p>
           </article>
+          )}
           </div>
 
           <div className="install-guide">

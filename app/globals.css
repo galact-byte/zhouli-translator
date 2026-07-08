@@ -28,11 +28,11 @@
   --paper-deep: #c4c8c0;
   --ink: #1c1f1d;
   --ink-soft: #63696a;
-  --red: #8a4b48;
-  --red-deep: #653733;
-  --red-soft: #a86f6a;
-  --red-rgb: 138, 75, 72;
-  --red-deep-rgb: 101, 55, 51;
+  --red: #45605a;
+  --red-deep: #32463f;
+  --red-soft: #6d857e;
+  --red-rgb: 69, 96, 90;
+  --red-deep-rgb: 50, 70, 63;
   --seal-cream: #ece6da;
   --bronze: #67705f;
   --line: rgba(60, 72, 68, 0.2);
@@ -256,6 +256,12 @@ main {
   background: url("data:image/svg+xml,%3Csvg width='400' height='10' viewBox='0 0 400 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 7C100 1 300 11 398 3' stroke='%239e3228' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 
+/* 黛玉：横线随黛青主色走，并压淡收细，合「克制不讨好」的气质 */
+[data-persona="daiyu"] .hero h1 em::after {
+  opacity: 0.34;
+  background: url("data:image/svg+xml,%3Csvg width='400' height='10' viewBox='0 0 400 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 7C100 1 300 11 398 3' stroke='%2345605a' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
 .hero-copy {
   margin: 0;
   color: var(--ink-soft);
@@ -415,71 +421,91 @@ main {
 
 /* 黛玉模式 - UI 主色覆盖 */
 [data-persona="daiyu"] .input-panel {
-  background: #f2ede4;
-  border-color: rgba(90, 70, 55, 0.18);
+  background: #eef1ec;
+  border-color: rgba(70, 82, 78, 0.18);
 }
 
 [data-persona="daiyu"] .input-panel textarea {
   background:
-    linear-gradient(transparent 39px, rgba(100, 80, 55, 0.10) 40px) 0 0 / 100% 40px,
-    rgba(226, 215, 198, 0.2);
-  border-color: rgba(90, 70, 55, 0.18);
+    linear-gradient(transparent 39px, rgba(70, 82, 78, 0.10) 40px) 0 0 / 100% 40px,
+    rgba(210, 218, 212, 0.2);
+  border-color: rgba(70, 82, 78, 0.18);
 }
 
 [data-persona="daiyu"] .mode-grid button.active {
-  background: rgba(140, 74, 66, 0.08);
-  border-color: rgba(140, 74, 66, 0.4);
+  background: rgba(69, 96, 90, 0.08);
+  border-color: rgba(69, 96, 90, 0.4);
 }
 
 [data-persona="daiyu"] .mode-grid button,
 [data-persona="daiyu"] .level-switch button,
 [data-persona="daiyu"] .example-row button {
-  border-color: rgba(90, 70, 55, 0.16);
+  border-color: rgba(70, 82, 78, 0.16);
 }
 
 [data-persona="daiyu"] .level-switch button.active {
-  background: rgba(140, 74, 66, 0.08);
-  border-color: rgba(140, 74, 66, 0.4);
+  background: rgba(69, 96, 90, 0.08);
+  border-color: rgba(69, 96, 90, 0.4);
   color: var(--red);
 }
 
 [data-persona="daiyu"] .result-topline {
-  border-color: rgba(90, 70, 55, 0.18);
+  border-color: rgba(70, 82, 78, 0.18);
 }
 
 [data-persona="daiyu"] .result-seal {
-  color: #b57068;
-  border-color: rgba(160, 100, 85, 0.48);
+  color: #4d655c;
+  border-color: rgba(69, 96, 90, 0.48);
 }
 
 [data-persona="daiyu"] .translate-button {
-  background: #8c4a42;
-  border-color: #6a3830;
+  background: #45605a;
+  border-color: #32463f;
 }
 
 [data-persona="daiyu"] .translate-button:hover {
-  background: #7a3d36;
+  background: #3a524c;
 }
 
 [data-persona="daiyu"] .divider::before,
 [data-persona="daiyu"] .divider::after {
-  background: rgba(100, 85, 70, 0.2);
+  background: rgba(70, 82, 78, 0.2);
 }
 
 [data-persona="daiyu"] .divider {
-  color: #7a6a55;
+  color: #5a6b63;
 }
 
 [data-persona="daiyu"] .section-number i {
-  background: #8c4a42;
+  background: #45605a;
 }
 
 [data-persona="daiyu"] .hero {
-  background: linear-gradient(135deg, #e8dfd2 0%, #d9cebf 100%);
+  background: linear-gradient(135deg, #dfe2dc 0%, #cdd2c9 100%);
+}
+
+/* 黛玉：英雄区内暖铜环线/输入面板/渐变遮罩去暖 */
+[data-persona="daiyu"] .hero::before {
+  border-color: rgba(70, 82, 78, 0.14);
+  box-shadow:
+    0 0 0 74px rgba(70, 82, 78, 0.025),
+    0 0 0 148px rgba(70, 82, 78, 0.02);
+}
+
+[data-persona="daiyu"] .hero-orbit,
+[data-persona="daiyu"] .hero-orbit::before,
+[data-persona="daiyu"] .hero-orbit::after {
+  border-color: rgba(70, 82, 78, 0.22);
+}
+
+[data-persona="daiyu"] .translator-section {
+  background:
+    linear-gradient(rgba(244, 247, 242, 0.68), rgba(244, 247, 242, 0.68)),
+    var(--paper);
 }
 
 [data-persona="daiyu"] .hero-scroll-indicator {
-  color: rgba(100, 85, 70, 0.3);
+  color: rgba(70, 82, 78, 0.3);
 }
 
 [data-persona="daiyu"] .assembly-frame {
@@ -488,7 +514,7 @@ main {
 
 [data-persona="daiyu"] .about-seal {
   border-color: var(--red);
-  box-shadow: inset 0 0 0 6px #c4c8c0, inset 0 0 0 7px rgba(138, 75, 72, 0.6);
+  box-shadow: inset 0 0 0 6px #c4c8c0, inset 0 0 0 7px rgba(69, 96, 90, 0.6);
 }
 
 [data-persona="daiyu"] .about-section {
@@ -1847,8 +1873,8 @@ main {
 }
 
 [data-persona="daiyu"] .principle-symbol {
-  color: #b57068;
-  border-color: rgba(160, 100, 85, 0.42);
+  color: #4d655c;
+  border-color: rgba(69, 96, 90, 0.42);
 }
 
 .principle-grid h3 {
