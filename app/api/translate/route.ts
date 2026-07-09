@@ -15,6 +15,7 @@ import {
   type DaiyuMode,
   type DaiyuLevel,
 } from "@/lib/prompt";
+import { cleanModelResponseText } from "@/lib/output";
 
 export const runtime = "nodejs";
 
@@ -327,7 +328,7 @@ function stripPlainPreamble(value: string) {
 }
 
 function cleanGeneratedText(value: string) {
-  return value
+  return cleanModelResponseText(value)
     .replace(
       /(?:我听说)?(?:从前|当年|古时候|古代)?有(?:一位|一个|位|个)?(?:贤人|贤者|长者)[^。！？!?]{0,10}(?:说过|讲过)[，,：:]*/g,
       "我听说从前有个贤人，",
@@ -337,13 +338,6 @@ function cleanGeneratedText(value: string) {
     .replace(/这正是我担忧的啊[，,。！？!?]*/g, "")
     .replace(/(?:你且想想|你好好想想|仔细想想)(?:其中的道理)?[，,、：:]*/g, "")
     .replace(/这其中的道理[，,、：:]*/g, "")
-    .replace(/\*\*([^*\n]+)\*\*/g, "$1")
-    .replace(/`([^`\n]+)`/g, "$1")
-    .replace(/^#{1,6}\s*/gm, "")
-    .replace(/^\s*[-*]\s+/gm, "")
-    .replace(/^\s*\d+[.、]\s+/gm, "")
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
@@ -981,8 +975,8 @@ export async function POST(request: NextRequest) {
       }
 
       const rawText = data?.choices?.[0]?.message?.content?.trim() || "";
-      // 黛玉腔走 DeepSeek 原始输出，不套周礼的 cleanGeneratedText 后处理
-      const generatedText = isDaiyu ? rawText : cleanGeneratedText(rawText);
+      // 黛玉腔不套周礼典故归一化，但仍要清掉模型自述、Markdown 和外层引号。
+      const generatedText = isDaiyu ? cleanModelResponseText(rawText) : cleanGeneratedText(rawText);
       cleanedResult = isPlainDirection
         ? stripPlainPreamble(generatedText)
         : generatedText;

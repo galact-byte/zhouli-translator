@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
@@ -15,6 +14,10 @@ const skillSource = () =>
   readFileSync(new URL("../skill-package/speak-zhouli/SKILL.md", import.meta.url), "utf8");
 const publicSkillSource = () =>
   readFileSync(new URL("../public/downloads/speak-zhouli-SKILL.md", import.meta.url), "utf8");
+const daiyuSkillSource = () =>
+  readFileSync(new URL("../skill-package/speak-daiyu/SKILL.md", import.meta.url), "utf8");
+const publicDaiyuSkillSource = () =>
+  readFileSync(new URL("../public/downloads/speak-daiyu-SKILL.md", import.meta.url), "utf8");
 
 test("website copy presents ask and explain as paired directions", () => {
   const source = pageSource();
@@ -49,23 +52,27 @@ test("public docs and metadata describe bidirectional translation", () => {
 
   const readme = readmeSource();
   assert.match(readme, /问礼 \+ 释礼/);
+  assert.match(readme, /拟颦 \+ 释颦/);
+  assert.match(readme, /周礼与黛玉是两套并列人设/);
   assert.match(readme, /释礼示例/);
+  assert.match(readme, /释颦示例/);
   assert.match(readme, /周礼体翻回直接人话/);
+  assert.match(readme, /黛玉体翻回直接人话/);
   assert.match(readme, /direction, plainMode/);
 });
 
-test("published Skill text and zip include the explain-zhouli workflow", () => {
+test("published Skill Markdown includes reverse workflows", () => {
   const source = skillSource();
   const publicCopy = publicSkillSource();
-  const zipped = execFileSync(
-    "unzip",
-    ["-p", "public/downloads/speak-zhouli-skill.zip", "speak-zhouli/SKILL.md"],
-    { cwd: new URL("..", import.meta.url), encoding: "utf8" },
-  );
+  const daiyuSource = daiyuSkillSource();
+  const publicDaiyuCopy = publicDaiyuSkillSource();
 
   assert.match(source, /## 释礼/);
   assert.match(source, /翻回人话/);
   assert.match(source, /不要以“这段话的意思是”开头/);
+  assert.match(daiyuSource, /## 释颦/);
+  assert.match(daiyuSource, /黛玉体翻回人话/);
+  assert.match(daiyuSource, /原话太短/);
   assert.equal(publicCopy, source);
-  assert.equal(zipped, source);
+  assert.equal(publicDaiyuCopy, daiyuSource);
 });
