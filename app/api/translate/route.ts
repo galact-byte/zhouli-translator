@@ -159,7 +159,7 @@ function daiyuDemoResult(text: string, mode: DaiyuMode, level: DaiyuLevel) {
     "我原是不想点破的，只是你这话说得这样明白，我再装糊涂，倒显得是我笨了。",
   ];
   const wistfulOpenings = [
-    "我原也是爱热闹的，只是后来渐渐明白了，热闹是别人的，我不过是个过客。�。今天这句话，听着又叫我心里起了波澜——罢了，原不该多想的。",
+    "我原也是爱热闹的，只是后来渐渐明白了，热闹是别人的，我不过是个过客。今天这句话，听着又叫我心里起了波澜——罢了，原不该多想的。",
     "人生聚散，原是常事。只是听到这句话，忽然想起从前也有人说过差不多的，后来也就散了。",
   ];
   const aloofOpenings = [
@@ -254,7 +254,7 @@ function daiyuPlainDemoResult(
   plainMode: PlainMode = "direct",
 ) {
   const normalized = text
-    .replace(/罢了|倒也|偏生|原不是|横竖|我倒不知|花|泪|寄居|颦卵/g, "")
+    .replace(/罢了|倒也|偏生|原不是|横竖|我倒不知|花|泪|寄居|颦卿/g, "")
     .replace(/[，。！？；：、\s]+/g, " ")
     .trim();
   const short =
@@ -271,8 +271,8 @@ function daiyuPlainDemoResult(
   if (level === "grand") {
     return [
       short,
-      "黛玉体的诗意和自嘶，多半是把一份情绪包得含蓄一点。",
-      "拆掉包装后，重点是她的态度和锻芒，不是意象本身。",
+      "黛玉体的诗意和自嘲，多半是把一份情绪包得含蓄一点。",
+      "拆掉包装后，重点是她的态度和锋芒，不是意象本身。",
     ].join("\n");
   }
 
@@ -784,7 +784,7 @@ export async function POST(request: NextRequest) {
     );
   }
   const isDaiyu = persona === "daiyu";
-  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颇/释颇
+  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颦/释颦
   const isPlainDirection = direction === "to_plain";
   const isDaiyuPlain = isDaiyu && isPlainDirection;
   const isZhouliPlain = !isDaiyu && isPlainDirection;
@@ -837,7 +837,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  if (isCyberAuditRequest(text)) {
+  if (!isDaiyu && isCyberAuditRequest(text)) {
     return NextResponse.json({
       result: cyberAuditResult(level),
       model: "礼官校订",
@@ -851,7 +851,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  if (isQuotedThreatEvaluationInput(text)) {
+  if (!isDaiyu && isQuotedThreatEvaluationInput(text)) {
     return NextResponse.json({
       result: quotedThreatEvaluationResult(level),
       model: "礼官校订",
