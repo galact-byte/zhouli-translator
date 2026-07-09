@@ -476,8 +476,15 @@ main {
   color: #5a6b63;
 }
 
-[data-persona="daiyu"] .section-number i {
-  background: #45605a;
+/* 黛玉：菱形序号不填色（与周礼一致的空心描边）——填色方块与 45° 菱形边框错位，会造成“重叠”观感。序号字颜色跟 `--red`（黛青）。 */
+[data-persona="daiyu"] .section-heading.light .section-number {
+  color: #6d857e;
+  border-color: #4d655c;
+}
+
+/* 黛玉：深色区小字（eyebrow）去暖，与冷调菱形同气质 */
+[data-persona="daiyu"] .section-heading.light p {
+  color: #97a89f;
 }
 
 [data-persona="daiyu"] .hero {
