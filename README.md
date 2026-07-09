@@ -1,7 +1,7 @@
 # 合乎周礼
 
 <p align="center">
-  <strong>把寻常的话，翻译成一本正经、略显荒唐、但又有礼有据的周礼白话翻译腔。</strong>
+  <strong>问礼 + 释礼：把寻常话写成周礼体，也把周礼体翻回直接人话。</strong>
 </p>
 
 <p align="center">
@@ -32,8 +32,10 @@
 
 ## What Is This
 
-`合乎周礼` 是一个中文梗文案生成器。它把普通中文改写成"大周礼时代"流行的
-白话翻译腔：先讲一个看似古代的道理，再把现代小事放进礼法、名分、职分和体面里一本正经地论证。
+`合乎周礼` 是一个中文梗文案生成器，也是一个周礼体反向解释器。它支持两种方向：
+问礼时，把普通中文改写成“大周礼时代”流行的白话翻译腔；释礼时，把周礼体翻回直接人话。
+问礼会先讲一个看似古代的道理，再把现代小事放进礼法、名分、职分和体面里一本正经地论证；
+释礼会拆掉这些包装，只保留原文真正想表达的意思。
 
 在线版本：[hehuzhouli.com](https://hehuzhouli.com)
 
@@ -48,9 +50,9 @@ Skill 发布处。
 - Next.js 网站源码。
 - `/api/translate` 服务端生成接口。
 - DeepSeek Chat Completions 调用逻辑。
-- 周礼体提示词构造与清洗规则。
+- 问礼与释礼提示词构造与清洗规则。
 - 可复制、可下载的 `speak-zhouli` 和 `speak-daiyu` Skill 包。
-- 礼帖图片生成与下载逻辑。
+- 礼帖/释帖图片生成与下载逻辑。
 
 仓库不包含真实 API Key、私有日志、线上账号凭据或生产平台的安全配置。
 
@@ -58,12 +60,14 @@ Skill 发布处。
 
 | Capability | Detail |
 | --- | --- |
-| 三档礼数 | 小礼、成礼、大礼，覆盖短评到长文 |
-| 四种辞气 | 温言相劝、大儒辩经、强行圆场、痛心疾首 |
+| 双向翻译 | 问礼生成周礼体，释礼把周礼体翻回直接人话 |
+| 问礼模式 | 温言相劝、大儒辩经、强行圆场、痛心疾首 |
+| 释礼模式 | 直白释义、耐心讲明、潜台词版、锐评拆穿 |
+| 三档长度 | 小礼/成礼/大礼与略释/明释/详释，覆盖短评到长文 |
 | 演示模式 | 没有 API Key 时仍可预览界面与交互 |
 | Skill 分发 | 支持一键复制 Skill 全文和 ZIP 下载 |
 | 双人设 | 周礼腔 + 林黛玉腔，Tab 一键切换 |
-| 图片礼帖 | 将生成结果保存为适合传播的图片 |
+| 图片导出 | 将问礼结果保存为礼帖，将释礼结果保存为释帖 |
 | 公开前审计 | 内置脚本扫描明显密钥与私钥块 |
 
 ## Star History
@@ -73,6 +77,8 @@ Skill 发布处。
 </a>
 
 ## Example
+
+### 问礼示例
 
 Input:
 
@@ -86,6 +92,20 @@ Output style:
 我听闻，古人设宴，并非只为一餐之饱，也是借饭食来观朋友情义。
 今日正逢星期四，我开口求一食，看似嘴馋，其实是在给诸位一个行仁义、修情分的机会。
 若有人愿意请客，便不是破费，而是以鸡会友，这难道不也合乎周礼吗？
+```
+
+### 释礼示例
+
+Input:
+
+```text
+我听闻，今日我设此礼门，并非拒人千里，只是怕众人一拥而入，坏了满座通畅。
+```
+
+Output style:
+
+```text
+我设置次数限制不是为了故意拦人，而是怕接口被刷爆，影响正常用户使用。
 ```
 
 ## 林黛玉腔调
@@ -149,6 +169,23 @@ Input:
 | 清怨 | 150-260字 | 一次转折，可选一句自造诗意小段 |
 | 伤逝 | 280-450字 | 从小事清醒推到命运认知，1-2句自造诗意段 |
 
+
+### 释颦示例
+
+释颦是黛玉腔的反向：把黛玉体的花泪意象、"罢了/倒/偏生"类虚词拆掉，翻回直白人话，同时保留原话的锋芒与立场。
+
+Input:
+
+```text
+我原不是那等嘴馋要人请客的人，只是这话说出来，倒要看看谁肯搭这个茬儿。罢了，没人应也不打紧，我自己去买便是。
+```
+
+Output style:
+
+```text
+我就是想让人请我吃个饭，随口说一句看有没有人接。没人接也无所谓，我自己买。
+```
+
 ## Quick Start
 
 Requirements:
@@ -184,7 +221,7 @@ app/
   api/translate/route.ts       Server-side generation endpoint
   page.tsx                     Main UI and card export flow
 lib/
-  prompt.ts                    Prompt assembly and perspective rules
+  prompt.ts                    问礼/释礼 prompt assembly and perspective rules
   cardDownload.ts              Unique card download filenames
 public/
   downloads/                   Public Skill assets
@@ -192,6 +229,7 @@ public/
 scripts/
   public-audit.mjs             Public-release secret scan
   run-zhouli-batch.mjs         Batch regression runner
+  *.test.ts                    Unit and public-asset regression tests
 skill-package/
   speak-zhouli/                Zhouli Skill source
   speak-daiyu/                 Daiyu Skill source
@@ -201,18 +239,21 @@ skill-package/
 
 The production generation path:
 
-1. The browser submits text, mode, level, persona, and a client id to `/api/translate`.
-2. The server validates input length, mode, level, and persona.
+1. The browser submits text, direction, mode, plainMode, level, persona, and a client id to `/api/translate`.
+2. The server validates input length, direction, mode, plainMode, level, and persona.
 3. A lightweight in-memory rate limiter checks the request.
-4. The server builds a persona-specific system prompt plus a user prompt.
+4. The server builds a persona/direction-specific system prompt plus a user prompt.
 5. DeepSeek returns a candidate response.
-6. The server cleans common failure patterns before returning JSON.
+6. The server cleans common failure patterns and strips plain-output preambles before returning JSON.
+
+The request shape keeps `direction, plainMode` explicit so the browser can switch
+between 问礼 and 释礼 without adding a second endpoint.
 
 Default runtime choices:
 
 - Model: `deepseek-v4-flash`.
 - Thinking mode: disabled.
-- User input limit: 300 Chinese characters.
+- User input limit: 300 Chinese characters for 问礼, 900 Chinese characters for 释礼.
 - Output limit: configured by `MAX_OUTPUT_TOKENS`.
 - API Key scope: server only, never sent to the browser.
 
@@ -222,7 +263,10 @@ side abuse controls and billing alerts.
 
 ## Speak Zhouli Skill
 
-The website ships standalone Skills:
+The website ships standalone Skills: `speak-zhouli` (which keeps the public name for
+compatibility and now covers both directions — ask it to `问礼` for Zhouli-style writing,
+or `释礼` / `翻回人话` to explain a Zhouli-style paragraph directly) and `speak-daiyu`
+(the Lin Daiyu voice, 黛玉腔).
 
 | Asset | Path |
 | --- | --- |
