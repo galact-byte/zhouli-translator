@@ -24,3 +24,38 @@
 
 修：（1）DAIYU_SYSTEM_PROMPT 加规则 15.5（严禁回应/反问用户，发言主体恒为原话说话人）；（2）isExpressionRequest 正则补 描述/描写/形容 变体（共享，周礼黛玉均受益）。trellis-check → PASS（含边缘回归验证）；typecheck+build 通过。design.md §3.9 记录。
 
+
+
+## Session 1: daiyu-tone 收尾：第二批坏字全量排查 + README 释颦纠错 + 提交归档
+
+**Date**: 2026-07-09
+**Task**: daiyu-tone 收尾：第二批坏字全量排查 + README 释颦纠错 + 提交归档
+**Branch**: `merge/upstream-reli`
+
+### Summary
+
+全量排查 lib/prompt.ts 黛玉视角指令块，订正第二批编码坏字（自嘐→自嘲等7类）；补 title/favicon 联动与卡片拟颦/释颦文案；发现并修正 README「林黛玉腔调」章节的释礼/释颦错位示例；新增 prompt-string-hygiene spec 与 design §3.10 沉淀坏字 pitfall；.gitignore 追加忽略 AI 配置，AGENTS.md 停止跟踪。typecheck+build+坏字扫描全绿。
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `efa760c` | (see git log) |
+| `d523b6e` | (see git log) |
+| `3ab52b9` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
