@@ -7,6 +7,10 @@
   --red: #9e3228;
   --red-deep: #77251f;
   --red-soft: #c86a59;
+  /* RGB 三元组：供 rgba() 透明度叠加用，随人设切换 */
+  --red-rgb: 158, 50, 40;
+  --red-deep-rgb: 119, 37, 31;
+  --seal-cream: #f8e8c8;
   --bronze: #766a48;
   --line: rgba(70, 57, 41, 0.22);
   --dark: #242622;
@@ -24,9 +28,12 @@
   --paper-deep: #c4c8c0;
   --ink: #1c1f1d;
   --ink-soft: #63696a;
-  --red: #8a4b48;
-  --red-deep: #653733;
-  --red-soft: #a86f6a;
+  --red: #45605a;
+  --red-deep: #32463f;
+  --red-soft: #6d857e;
+  --red-rgb: 69, 96, 90;
+  --red-deep-rgb: 50, 70, 63;
+  --seal-cream: #ece6da;
   --bronze: #67705f;
   --line: rgba(60, 72, 68, 0.2);
   --dark: #23272a;
@@ -113,7 +120,7 @@ main {
   height: 46px;
   display: grid;
   place-items: center;
-  color: #f8e8c8;
+  color: var(--seal-cream);
   background: var(--red);
   border: 1px solid var(--red-deep);
   box-shadow: inset 0 0 0 5px var(--red), inset 0 0 0 6px rgba(248, 232, 200, 0.65);
@@ -249,6 +256,12 @@ main {
   background: url("data:image/svg+xml,%3Csvg width='400' height='10' viewBox='0 0 400 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 7C100 1 300 11 398 3' stroke='%239e3228' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 
+/* 黛玉：横线随黛青主色走，并压淡收细，合「克制不讨好」的气质 */
+[data-persona="daiyu"] .hero h1 em::after {
+  opacity: 0.34;
+  background: url("data:image/svg+xml,%3Csvg width='400' height='10' viewBox='0 0 400 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 7C100 1 300 11 398 3' stroke='%2345605a' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
 .hero-copy {
   margin: 0;
   color: var(--ink-soft);
@@ -281,7 +294,7 @@ main {
 .hero-cta:hover {
   transform: translateY(-2px);
   background: var(--red-deep);
-  box-shadow: 0 12px 28px rgba(119, 37, 31, 0.2);
+  box-shadow: 0 12px 28px rgba(var(--red-deep-rgb), 0.2);
 }
 
 .hero-cta svg {
@@ -408,71 +421,98 @@ main {
 
 /* 黛玉模式 - UI 主色覆盖 */
 [data-persona="daiyu"] .input-panel {
-  background: #f2ede4;
-  border-color: rgba(90, 70, 55, 0.18);
+  background: #eef1ec;
+  border-color: rgba(70, 82, 78, 0.18);
 }
 
 [data-persona="daiyu"] .input-panel textarea {
   background:
-    linear-gradient(transparent 39px, rgba(100, 80, 55, 0.10) 40px) 0 0 / 100% 40px,
-    rgba(226, 215, 198, 0.2);
-  border-color: rgba(90, 70, 55, 0.18);
+    linear-gradient(transparent 39px, rgba(70, 82, 78, 0.10) 40px) 0 0 / 100% 40px,
+    rgba(210, 218, 212, 0.2);
+  border-color: rgba(70, 82, 78, 0.18);
 }
 
 [data-persona="daiyu"] .mode-grid button.active {
-  background: rgba(140, 74, 66, 0.08);
-  border-color: rgba(140, 74, 66, 0.4);
+  background: rgba(69, 96, 90, 0.08);
+  border-color: rgba(69, 96, 90, 0.4);
 }
 
 [data-persona="daiyu"] .mode-grid button,
 [data-persona="daiyu"] .level-switch button,
 [data-persona="daiyu"] .example-row button {
-  border-color: rgba(90, 70, 55, 0.16);
+  border-color: rgba(70, 82, 78, 0.16);
 }
 
 [data-persona="daiyu"] .level-switch button.active {
-  background: rgba(140, 74, 66, 0.08);
-  border-color: rgba(140, 74, 66, 0.4);
+  background: rgba(69, 96, 90, 0.08);
+  border-color: rgba(69, 96, 90, 0.4);
   color: var(--red);
 }
 
 [data-persona="daiyu"] .result-topline {
-  border-color: rgba(90, 70, 55, 0.18);
+  border-color: rgba(70, 82, 78, 0.18);
 }
 
 [data-persona="daiyu"] .result-seal {
-  color: #b57068;
-  border-color: rgba(160, 100, 85, 0.48);
+  color: #4d655c;
+  border-color: rgba(69, 96, 90, 0.48);
 }
 
 [data-persona="daiyu"] .translate-button {
-  background: #8c4a42;
-  border-color: #6a3830;
+  background: #45605a;
+  border-color: #32463f;
 }
 
 [data-persona="daiyu"] .translate-button:hover {
-  background: #7a3d36;
+  background: #3a524c;
 }
 
 [data-persona="daiyu"] .divider::before,
 [data-persona="daiyu"] .divider::after {
-  background: rgba(100, 85, 70, 0.2);
+  background: rgba(70, 82, 78, 0.2);
 }
 
 [data-persona="daiyu"] .divider {
-  color: #7a6a55;
+  color: #5a6b63;
 }
 
-[data-persona="daiyu"] .section-number i {
-  background: #8c4a42;
+/* 黛玉：菱形序号不填色（与周礼一致的空心描边）——填色方块与 45° 菱形边框错位，会造成“重叠”观感。序号字颜色跟 `--red`（黛青）。 */
+[data-persona="daiyu"] .section-heading.light .section-number {
+  color: #6d857e;
+  border-color: #4d655c;
+}
+
+/* 黛玉：深色区小字（eyebrow）去暖，与冷调菱形同气质 */
+[data-persona="daiyu"] .section-heading.light p {
+  color: #97a89f;
 }
 
 [data-persona="daiyu"] .hero {
-  background: linear-gradient(135deg, #e8dfd2 0%, #d9cebf 100%);
+  background: linear-gradient(135deg, #dfe2dc 0%, #cdd2c9 100%);
+}
+
+/* 黛玉：英雄区内暖铜环线/输入面板/渐变遮罩去暖 */
+[data-persona="daiyu"] .hero::before {
+  border-color: rgba(70, 82, 78, 0.14);
+  box-shadow:
+    0 0 0 74px rgba(70, 82, 78, 0.025),
+    0 0 0 148px rgba(70, 82, 78, 0.02);
+}
+
+[data-persona="daiyu"] .hero-orbit,
+[data-persona="daiyu"] .hero-orbit::before,
+[data-persona="daiyu"] .hero-orbit::after {
+  border-color: rgba(70, 82, 78, 0.22);
+}
+
+[data-persona="daiyu"] .translator-section {
+  background:
+    linear-gradient(rgba(244, 247, 242, 0.68), rgba(244, 247, 242, 0.68)),
+    var(--paper);
 }
 
 [data-persona="daiyu"] .hero-scroll-indicator {
-  color: rgba(100, 85, 70, 0.3);
+  color: rgba(70, 82, 78, 0.3);
 }
 
 [data-persona="daiyu"] .assembly-frame {
@@ -481,11 +521,61 @@ main {
 
 [data-persona="daiyu"] .about-seal {
   border-color: var(--red);
-  box-shadow: inset 0 0 0 6px #c4c8c0, inset 0 0 0 7px rgba(138, 75, 72, 0.6);
+  box-shadow: inset 0 0 0 6px #c4c8c0, inset 0 0 0 7px rgba(69, 96, 90, 0.6);
 }
 
 [data-persona="daiyu"] .about-section {
   background: linear-gradient(-12deg, #cbd0c7 0%, #e0e3dc 100%);
+}
+
+/* 黛玉：将剩余暖调固色面板换成冷调 */
+[data-persona="daiyu"] .skill-section {
+  background:
+    linear-gradient(115deg, rgba(246, 248, 245, 0.66), transparent 48%),
+    #cdd2c9;
+}
+
+[data-persona="daiyu"] .skill-knot {
+  color: var(--red-deep);
+  background: #d5dad0;
+  border-color: #c2c8bd;
+}
+
+[data-persona="daiyu"] .loading-dots i {
+  background: #c9cec4;
+}
+
+/* 黛玉：深暖砖红 Skill 卡换成冷调墨绿，与冷灰页面同一气质 */
+[data-persona="daiyu"] .skill-package-card {
+  color: #e7e9e2;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 42%),
+    #2f3733;
+  border-color: #232a26;
+  box-shadow: 0 25px 60px rgba(35, 45, 40, 0.22);
+}
+
+[data-persona="daiyu"] .skill-copy-full {
+  color: var(--red-deep);
+  background: #dfe3dc;
+  border-color: #eef0ea;
+  box-shadow:
+    inset 0 0 0 4px #dfe3dc,
+    inset 0 0 0 5px rgba(var(--red-deep-rgb), 0.24);
+}
+
+[data-persona="daiyu"] .skill-copy-full:hover {
+  background: #e8ebe4;
+  box-shadow: 0 12px 28px rgba(35, 45, 40, 0.2);
+}
+
+[data-persona="daiyu"] .install-guide {
+  background: rgba(238, 242, 237, 0.82);
+  box-shadow: inset 0 0 0 7px rgba(238, 242, 237, 0.46);
+}
+
+[data-persona="daiyu"] .install-steps code {
+  color: var(--red-deep);
 }
 
 .assembly-wash {
@@ -515,7 +605,7 @@ main {
   flex: none;
   display: grid;
   place-items: center;
-  color: #f8e8c8;
+  color: var(--seal-cream);
   background: var(--red);
   border: 1px solid var(--red-deep);
   box-shadow:
@@ -560,7 +650,7 @@ main {
 .assembly-corner::after {
   content: "";
   position: absolute;
-  background: rgba(158, 50, 40, 0.54);
+  background: rgba(var(--red-rgb), 0.54);
 }
 
 .assembly-corner::before {
@@ -752,7 +842,7 @@ main {
 
 .persona-tabs button.active {
   color: var(--red);
-  background: rgba(158, 50, 40, 0.06);
+  background: rgba(var(--red-rgb), 0.06);
   border-color: var(--red-soft);
 }
 
@@ -794,8 +884,55 @@ main {
 }
 
 .input-panel textarea:focus {
-  border-color: rgba(158, 50, 40, 0.6);
-  box-shadow: 0 0 0 3px rgba(158, 50, 40, 0.06);
+  border-color: rgba(var(--red-rgb), 0.6);
+  box-shadow: 0 0 0 3px rgba(var(--red-rgb), 0.06);
+}
+
+.direction-switch {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  background: rgba(222, 211, 192, 0.42);
+  border: 1px solid var(--line);
+}
+
+.direction-switch button {
+  min-height: 58px;
+  padding: 11px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  transition: 160ms ease;
+}
+
+.direction-switch button:hover {
+  color: var(--red);
+}
+
+.direction-switch button.active {
+  color: var(--white);
+  background: var(--red);
+  box-shadow:
+    inset 0 0 0 4px var(--red),
+    inset 0 0 0 5px rgba(255, 239, 212, 0.24);
+}
+
+.direction-switch strong {
+  font: 600 15px/1 var(--serif);
+  letter-spacing: 0.14em;
+}
+
+.direction-switch small {
+  font: 500 10px/1.35 var(--serif);
+  letter-spacing: 0.04em;
+  opacity: 0.78;
 }
 
 .example-row {
@@ -819,19 +956,23 @@ main {
 }
 
 .example-row button {
+  max-width: 230px;
   padding: 6px 9px;
   cursor: pointer;
   color: var(--ink-soft);
   background: transparent;
   border: 1px solid rgba(73, 59, 42, 0.16);
   font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: 150ms ease;
 }
 
 .example-row button:hover {
   color: var(--red);
-  background: rgba(158, 50, 40, 0.04);
-  border-color: rgba(158, 50, 40, 0.34);
+  background: rgba(var(--red-rgb), 0.04);
+  border-color: rgba(var(--red-rgb), 0.34);
 }
 
 .divider {
@@ -872,11 +1013,11 @@ main {
 }
 
 .mode-grid button:hover {
-  border-color: rgba(158, 50, 40, 0.38);
+  border-color: rgba(var(--red-rgb), 0.38);
 }
 
 .mode-grid button.active {
-  background: rgba(158, 50, 40, 0.055);
+  background: rgba(var(--red-rgb), 0.055);
   border-color: var(--red);
   box-shadow: inset 3px 0 0 var(--red);
 }
@@ -888,7 +1029,7 @@ main {
   display: grid;
   place-items: center;
   color: var(--red);
-  border: 1px solid rgba(158, 50, 40, 0.42);
+  border: 1px solid rgba(var(--red-rgb), 0.42);
   border-radius: 50%;
   font: 600 17px/1 var(--serif);
 }
@@ -987,7 +1128,7 @@ main {
   box-shadow:
     inset 0 0 0 4px var(--red-deep),
     inset 0 0 0 5px rgba(255, 239, 212, 0.28),
-    0 10px 24px rgba(119, 37, 31, 0.18);
+    0 10px 24px rgba(var(--red-deep-rgb), 0.18);
 }
 
 .translate-button:disabled {
@@ -1002,7 +1143,7 @@ main {
 
 .button-decoration {
   justify-self: start;
-  color: #efcda2;
+  color: var(--seal-cream);
   font-size: 9px;
 }
 
@@ -1182,7 +1323,7 @@ main {
 }
 
 .result-actions button:hover {
-  color: #f7e9ce;
+  color: var(--seal-cream);
   border-color: rgba(239, 220, 188, 0.45);
   background: rgba(255, 255, 255, 0.035);
 }
@@ -1341,7 +1482,7 @@ main {
   border: 1px solid #f0dfc4;
   box-shadow:
     inset 0 0 0 5px #ebd8ba,
-    inset 0 0 0 6px rgba(118, 42, 36, 0.38);
+    inset 0 0 0 6px rgba(var(--red-deep-rgb), 0.38);
   font: 700 34px/1 var(--serif);
   transform: rotate(-3deg);
 }
@@ -1448,7 +1589,7 @@ main {
   border: 1px solid #f5e7cf;
   box-shadow:
     inset 0 0 0 4px #eddcbd,
-    inset 0 0 0 5px rgba(103, 35, 31, 0.24);
+    inset 0 0 0 5px rgba(var(--red-deep-rgb), 0.24);
 }
 
 .skill-download {
@@ -1496,7 +1637,7 @@ main {
 }
 
 .skill-copy-full small {
-  color: rgba(103, 35, 31, 0.58);
+  color: rgba(var(--red-deep-rgb), 0.58);
 }
 
 .skill-download small {
@@ -1597,7 +1738,7 @@ main {
   top: 33px;
   bottom: 0;
   left: 16px;
-  background: rgba(158, 50, 40, 0.22);
+  background: rgba(var(--red-rgb), 0.22);
 }
 
 .install-steps li > span {
@@ -1605,7 +1746,7 @@ main {
   height: 33px;
   display: grid;
   place-items: center;
-  color: #f7e7ca;
+  color: var(--seal-cream);
   background: var(--red);
   border-radius: 50%;
   font: 600 12px/1 var(--serif);
@@ -1629,8 +1770,8 @@ main {
   padding: 5px 8px;
   display: inline-block;
   color: #6d2c25;
-  background: rgba(158, 50, 40, 0.06);
-  border: 1px solid rgba(158, 50, 40, 0.13);
+  background: rgba(var(--red-rgb), 0.06);
+  border: 1px solid rgba(var(--red-rgb), 0.13);
   font: 500 10px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
@@ -1739,8 +1880,8 @@ main {
 }
 
 [data-persona="daiyu"] .principle-symbol {
-  color: #b57068;
-  border-color: rgba(160, 100, 85, 0.42);
+  color: #4d655c;
+  border-color: rgba(69, 96, 90, 0.42);
 }
 
 .principle-grid h3 {
@@ -1774,7 +1915,7 @@ main {
   place-items: center;
   color: var(--red);
   border: 2px solid var(--red);
-  box-shadow: inset 0 0 0 6px #dcd0bc, inset 0 0 0 7px rgba(158, 50, 40, 0.65);
+  box-shadow: inset 0 0 0 6px #dcd0bc, inset 0 0 0 7px rgba(var(--red-rgb), 0.65);
   font: 700 29px/1 var(--serif);
   transform: rotate(-3deg);
 }
@@ -1849,7 +1990,7 @@ footer > span,
 
 .footer-note a {
   text-decoration: none;
-  border-bottom: 1px solid rgba(165, 64, 50, 0.22);
+  border-bottom: 1px solid rgba(var(--red-rgb), 0.22);
   transition:
     color 180ms ease,
     border-color 180ms ease;
@@ -1857,7 +1998,7 @@ footer > span,
 
 .footer-note a:hover {
   color: var(--red);
-  border-color: rgba(165, 64, 50, 0.5);
+  border-color: rgba(var(--red-rgb), 0.5);
 }
 
 .footer-sponsor {
@@ -2150,6 +2291,7 @@ footer > span,
   }
 
   .prompt-example button {
+    min-height: 40px;
     width: fit-content;
   }
 
@@ -2195,6 +2337,17 @@ footer > span,
     margin-bottom: 8px;
   }
 
+  .example-row > div {
+    gap: 9px;
+  }
+
+  .example-row button {
+    max-width: 100%;
+    min-height: 40px;
+    padding: 0 11px;
+    text-align: left;
+  }
+
   .mode-grid {
     grid-template-columns: 1fr;
   }
@@ -2214,6 +2367,7 @@ footer > span,
 
   .level-switch button {
     flex: 1;
+    height: 40px;
   }
 
   .translate-button {
@@ -2240,6 +2394,7 @@ footer > span,
   }
 
   .result-actions button {
+    min-height: 40px;
     flex: 1;
     justify-content: center;
     white-space: nowrap;
@@ -2303,9 +2458,22 @@ footer > span,
     text-align: left;
   }
 
+  .footer-note a {
+    min-width: 44px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
   .footer-right {
     justify-self: start;
     text-align: left;
+  }
+
+  .footer-right a {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
   }
 }
 

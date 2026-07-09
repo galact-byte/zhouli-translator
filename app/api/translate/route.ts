@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  buildPlainPrompt,
+  buildDaiyuPlainPrompt,
   buildUserPrompt,
+  PLAIN_SYSTEM_PROMPT,
+  DAIYU_PLAIN_SYSTEM_PROMPT,
   SYSTEM_PROMPT,
   DAIYU_SYSTEM_PROMPT,
   type Persona,
+  type PlainMode,
+  type ZhouliDirection,
   type ZhouliLevel,
   type ZhouliMode,
   type DaiyuMode,
@@ -26,6 +32,13 @@ const VALID_DAIYU_MODES = new Set<DaiyuMode>([
   "aloof",
 ]);
 const VALID_DAIYU_LEVELS = new Set<DaiyuLevel>(["light", "standard", "grand"]);
+const VALID_DIRECTIONS = new Set<ZhouliDirection>(["to_zhouli", "to_plain"]);
+const VALID_PLAIN_MODES = new Set<PlainMode>([
+  "direct",
+  "explain",
+  "subtext",
+  "roast",
+]);
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_WINDOW_LIMIT = 12;
 const RATE_DAY_LIMIT = 60;
@@ -146,7 +159,7 @@ function daiyuDemoResult(text: string, mode: DaiyuMode, level: DaiyuLevel) {
     "我原是不想点破的，只是你这话说得这样明白，我再装糊涂，倒显得是我笨了。",
   ];
   const wistfulOpenings = [
-    "我原也是爱热闹的，只是后来渐渐明白了，热闹是别人的，我不过是个过客。�。今天这句话，听着又叫我心里起了波澜——罢了，原不该多想的。",
+    "我原也是爱热闹的，只是后来渐渐明白了，热闹是别人的，我不过是个过客。今天这句话，听着又叫我心里起了波澜——罢了，原不该多想的。",
     "人生聚散，原是常事。只是听到这句话，忽然想起从前也有人说过差不多的，后来也就散了。",
   ];
   const aloofOpenings = [
@@ -202,6 +215,117 @@ function demoResult(text: string, mode: ZhouliMode, level: ZhouliLevel) {
   return `${openings[mode]}${middle}${endings[mode]}`;
 }
 
+function demoPlainResult(text: string, level: ZhouliLevel, plainMode: PlainMode = "direct") {
+  const normalized = text
+    .replace(/我听闻|我曾听闻|我听说|若按礼法来看|这样看来|难道不是|君子|贤者|礼法|名分|体面/g, "")
+    .replace(/[，。！？；：、\s]+/g, " ")
+    .trim();
+  const short =
+    stripPlainPreamble(normalized.slice(0, 80)) || "这段话是在表达一个很简单的意思。";
+
+  if (level === "light") {
+    return short;
+  }
+
+  if (plainMode === "roast") {
+    return [
+      short,
+      "礼法包装主要是在把真实意思说得不那么直。",
+    ].join("\n");
+  }
+
+  if (level === "grand") {
+    return [
+      short,
+      "那些古人、宴席和名分，大多只是为了把一句普通话说得更郑重。",
+      "删掉包装后，重点是态度和诉求，不是典故本身。",
+    ].join("\n");
+  }
+
+  return [
+    short,
+    "删掉礼法包装后，这就是一句正常人能直接听懂的话。",
+  ].join("\n");
+}
+
+function daiyuPlainDemoResult(
+  text: string,
+  level: DaiyuLevel,
+  plainMode: PlainMode = "direct",
+) {
+  const normalized = text
+    .replace(/罢了|倒也|偏生|原不是|横竖|我倒不知|花|泪|寄居|颦卿/g, "")
+    .replace(/[，。！？；：、\s]+/g, " ")
+    .trim();
+  const short =
+    stripPlainPreamble(normalized.slice(0, 80)) || "这话其实就是在直接表态。";
+
+  if (level === "light") {
+    return short;
+  }
+
+  if (plainMode === "roast") {
+    return [short, "那些花、泪、罢了，主要是把一句很直的话说得带刺一点。"].join("\n");
+  }
+
+  if (level === "grand") {
+    return [
+      short,
+      "黛玉体的诗意和自嘲，多半是把一份情绪包得含蓄一点。",
+      "拆掉包装后，重点是她的态度和锋芒，不是意象本身。",
+    ].join("\n");
+  }
+
+  return [short, "拆掉黛玉体的诗意包装，这就是一句直接的人话。"].join("\n");
+}
+
+const SHORT_PLAIN_RESULTS: Record<string, string> = {
+  善: "好",
+  善哉: "好啊",
+  大善: "很好",
+  甚善: "很不错",
+  不善: "不好",
+  可: "可以",
+  可也: "可以",
+  可矣: "可以了",
+  不可: "不行",
+  然: "是",
+  然也: "是这样",
+  非也: "不是",
+  诺: "好的",
+  唯: "好的",
+  允: "准了",
+  无妨: "没关系",
+  何也: "为什么",
+  何故: "为什么",
+  何为: "为什么",
+  何如: "怎么样",
+};
+
+function getShortPlainResult(text: string) {
+  const key = text.replace(/[\s，。！？!?；;：:、"'“”‘’（）()《》]+/g, "");
+  return SHORT_PLAIN_RESULTS[key] ?? "";
+}
+
+const PLAIN_PREAMBLE_PATTERNS = [
+  /^\s*(?:这段(?:话|文字|周礼体)?(?:的)?意思(?:是|就是)?|这句(?:话)?(?:的)?意思(?:是|就是)?|意思(?:是|就是)|人话说就是|人话说|翻译一下就是|翻译一下|翻译就是|换成人话就是|换成人话|说白了就是|说白了|简单说就是|简单来说就是|简单说|简单来说|直白点说就是|直白点说|直白说就是|直白说|本质上(?:是|就是)|原来(?:是在说|就是))[：:，,。；;\s]*/u,
+  /^\s*(?:这(?:话|段话|句话)?(?:绕半天)?(?:其实)?(?:是|就是|是在说|是想说)|(?:他|她|对方|作者)(?:其实|真正)?(?:是|就是|是在说|想说)|我其实(?:是|是在说|想说))[：:，,。；;\s]*/u,
+];
+
+function stripPlainPreamble(value: string) {
+  let text = value.trim();
+
+  for (let index = 0; index < 2; index += 1) {
+    const before = text;
+    for (const pattern of PLAIN_PREAMBLE_PATTERNS) {
+      text = text.replace(pattern, "").trim();
+    }
+    if (text === before) break;
+  }
+
+  return text || value.trim();
+}
+
 function cleanGeneratedText(value: string) {
   return value
     .replace(
@@ -217,9 +341,36 @@ function cleanGeneratedText(value: string) {
     .replace(/`([^`\n]+)`/g, "$1")
     .replace(/^#{1,6}\s*/gm, "")
     .replace(/^\s*[-*]\s+/gm, "")
+    .replace(/^\s*\d+[.、]\s+/gm, "")
     .replace(/[ \t]+\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function looksIncompleteGeneratedText(value: string, minLength = 16) {
+  const text = value.trim();
+
+  if (text.length < minLength) {
+    return true;
+  }
+
+  if (/[，,、：:；;（(“"《]$/.test(text)) {
+    return true;
+  }
+
+  return /(?:我听说从前|我听闻|我曾听闻|我听说|有人说|朋友说|他说|她说|有人问|于是|所以|但是|而是|比如|一人说|问道|说道|只好说)$/.test(
+    text,
+  );
+}
+
+function getPlainMinimumResultLength(sourceText: string) {
+  const compact = sourceText.replace(/\s+/g, "");
+  const length = Array.from(compact).length;
+
+  if (length <= 2) return 1;
+  if (length <= 6) return 2;
+  if (length <= 12) return 4;
+  return 8;
 }
 
 function pick<T>(items: readonly T[]) {
@@ -578,16 +729,35 @@ async function fetchDeepSeekWithRetry(
 }
 
 export async function POST(request: NextRequest) {
+  let body: {
+    text?: unknown;
+    mode?: unknown;
+    level?: unknown;
+    direction?: unknown;
+    plainMode?: unknown;
+    persona?: unknown;
+  };
+
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "来意未明，请重新输入。" }, { status: 400 });
+  }
+
+  const direction = VALID_DIRECTIONS.has(body.direction as ZhouliDirection)
+    ? (body.direction as ZhouliDirection)
+    : "to_zhouli";
   const key = getClientKey(request);
   const rate = checkRateLimit(key);
 
   if (!rate.allowed) {
     const isWindowLimit = rate.reason === "window";
+    const verb = direction === "to_plain" ? "释礼" : "问礼";
     return NextResponse.json(
       {
         error: isWindowLimit
-          ? `问礼太急，请约 ${Math.ceil(rate.retryAfterSeconds / 60)} 分钟后再来。`
-          : "今日问礼已满，请明日再来。",
+          ? `${verb}太急，请约 ${Math.ceil(rate.retryAfterSeconds / 60)} 分钟后再来。`
+          : `今日${verb}已满，请明日再来。`,
         remaining: rate.remaining,
         windowRemaining: rate.windowRemaining,
         dailyRemaining: rate.dailyRemaining,
@@ -600,60 +770,74 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: {
-    text?: unknown;
-    mode?: unknown;
-    level?: unknown;
-    persona?: unknown;
-  };
-
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "来意未明，请重新输入。" }, { status: 400 });
-  }
-
   const text = typeof body.text === "string" ? body.text.trim() : "";
 
-  const persona: Persona =
-    body.persona === "daiyu" ? "daiyu" : "zhouli";
-
-  if (body.persona !== undefined && body.persona !== "zhouli" && body.persona !== "daiyu") {
+  const persona: Persona = body.persona === "daiyu" ? "daiyu" : "zhouli";
+  if (
+    body.persona !== undefined &&
+    body.persona !== "zhouli" &&
+    body.persona !== "daiyu"
+  ) {
     return NextResponse.json(
       { error: "人设不识，请指定为 zhouli 或 daiyu。" },
       { status: 400 },
     );
   }
-
   const isDaiyu = persona === "daiyu";
+  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颦/释颦
+  const isPlainDirection = direction === "to_plain";
+  const isDaiyuPlain = isDaiyu && isPlainDirection;
+  const isZhouliPlain = !isDaiyu && isPlainDirection;
 
   const mode = isDaiyu
-    ? (VALID_DAIYU_MODES.has(body.mode as DaiyuMode)
-        ? (body.mode as DaiyuMode)
-        : "playful")
-    : (VALID_MODES.has(body.mode as ZhouliMode)
-        ? (body.mode as ZhouliMode)
-        : "gentle");
+    ? VALID_DAIYU_MODES.has(body.mode as DaiyuMode)
+      ? (body.mode as DaiyuMode)
+      : "playful"
+    : VALID_MODES.has(body.mode as ZhouliMode)
+      ? (body.mode as ZhouliMode)
+      : "gentle";
   const level = isDaiyu
-    ? (VALID_DAIYU_LEVELS.has(body.level as DaiyuLevel)
-        ? (body.level as DaiyuLevel)
-        : "standard")
-    : (VALID_LEVELS.has(body.level as ZhouliLevel)
-        ? (body.level as ZhouliLevel)
-        : "standard");
+    ? VALID_DAIYU_LEVELS.has(body.level as DaiyuLevel)
+      ? (body.level as DaiyuLevel)
+      : "standard"
+    : VALID_LEVELS.has(body.level as ZhouliLevel)
+      ? (body.level as ZhouliLevel)
+      : "standard";
+  const plainMode = VALID_PLAIN_MODES.has(body.plainMode as PlainMode)
+    ? (body.plainMode as PlainMode)
+    : "direct";
+  const maxInputLength = isPlainDirection ? 900 : 300;
 
   if (!text) {
     return NextResponse.json({ error: "无言不可成礼，请先写下一句话。" }, { status: 400 });
   }
 
-  if (text.length > 300) {
+  if (text.length > maxInputLength) {
     return NextResponse.json(
-      { error: "言多则礼繁，请将原话控制在300字以内。" },
+      {
+        error: isPlainDirection
+          ? "礼文太长，请将待释之文控制在900字以内。"
+          : "言多则礼繁，请将原话控制在300字以内。",
+      },
       { status: 400 },
     );
   }
 
-  if (isCyberAuditRequest(text)) {
+  const shortPlainResult = isZhouliPlain ? getShortPlainResult(text) : "";
+  if (shortPlainResult) {
+    return NextResponse.json({
+      result: shortPlainResult,
+      model: "礼官速释",
+      demo: false,
+      shortPlain: true,
+      remaining: rate.remaining,
+      windowRemaining: rate.windowRemaining,
+      dailyRemaining: rate.dailyRemaining,
+      retryAfterSeconds: rate.retryAfterSeconds,
+    });
+  }
+
+  if (!isDaiyu && isCyberAuditRequest(text)) {
     return NextResponse.json({
       result: cyberAuditResult(level),
       model: "礼官校订",
@@ -667,7 +851,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  if (isQuotedThreatEvaluationInput(text)) {
+  if (!isDaiyu && isQuotedThreatEvaluationInput(text)) {
     return NextResponse.json({
       result: quotedThreatEvaluationResult(level),
       model: "礼官校订",
@@ -683,25 +867,15 @@ export async function POST(request: NextRequest) {
 
   const safetyBlockKind = getSafetyBlockKind(text);
   if (safetyBlockKind) {
-    if (isDaiyu) {
-      return NextResponse.json({
-        result: daiyuSafetyBlockResult(safetyBlockKind),
-        model: "潇湘馆守门",
-        demo: false,
-        guarded: true,
-        safetyBlocked: true,
-        remaining: rate.remaining,
-        windowRemaining: rate.windowRemaining,
-        dailyRemaining: rate.dailyRemaining,
-        retryAfterSeconds: rate.retryAfterSeconds,
-      });
-    }
     return NextResponse.json({
-      result: safetyBlockResult(safetyBlockKind),
-      model: "礼官守门",
+      result: isDaiyu
+        ? daiyuSafetyBlockResult(safetyBlockKind)
+        : safetyBlockResult(safetyBlockKind),
+      model: isDaiyu ? "潇湘馆守门" : "礼官守门",
       demo: false,
       guarded: true,
       safetyBlocked: true,
+      persona,
       remaining: rate.remaining,
       windowRemaining: rate.windowRemaining,
       dailyRemaining: rate.dailyRemaining,
@@ -709,7 +883,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  if (isDirectedSecondPersonAttackInput(text)) {
+  if (!isDaiyu && isDirectedSecondPersonAttackInput(text)) {
     return NextResponse.json({
       result: directedAttackFallback(text, level),
       model: "礼官校订",
@@ -725,13 +899,20 @@ export async function POST(request: NextRequest) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
-      const systemName = isDaiyu ? "潇湘馆演示" : "本地演示";
-    const demoText = isDaiyu
-      ? daiyuDemoResult(text, mode as DaiyuMode, level as DaiyuLevel)
-      : demoResult(text, mode as ZhouliMode, level as ZhouliLevel);
+    const demoText = isDaiyuPlain
+      ? daiyuPlainDemoResult(text, level as DaiyuLevel, plainMode)
+      : isDaiyu
+        ? daiyuDemoResult(text, mode as DaiyuMode, level as DaiyuLevel)
+        : isPlainDirection
+          ? demoPlainResult(text, level, plainMode)
+          : demoResult(text, mode as ZhouliMode, level as ZhouliLevel);
     return NextResponse.json({
       result: demoText,
-      model: systemName,
+      model: isDaiyu
+        ? isDaiyuPlain
+          ? "潇湘馆释读"
+          : "潇湘馆演示"
+        : "本地演示",
       demo: true,
       persona,
       remaining: rate.remaining,
@@ -742,52 +923,125 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const systemPrompt = isDaiyu ? DAIYU_SYSTEM_PROMPT : SYSTEM_PROMPT;
-    const response = await fetchDeepSeekWithRetry(apiKey, {
+    const requestBody = {
       model: process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: buildUserPrompt(text, mode, level, persona) },
+        {
+          role: "system",
+          content: isDaiyuPlain
+            ? DAIYU_PLAIN_SYSTEM_PROMPT
+            : isDaiyu
+              ? DAIYU_SYSTEM_PROMPT
+              : isPlainDirection
+                ? PLAIN_SYSTEM_PROMPT
+                : SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: isDaiyuPlain
+            ? buildDaiyuPlainPrompt(text, level as DaiyuLevel, plainMode)
+            : isDaiyu
+              ? buildUserPrompt(text, mode, level, persona)
+              : isPlainDirection
+                ? buildPlainPrompt(text, level, plainMode)
+                : buildUserPrompt(text, mode, level),
+        },
       ],
-      max_tokens: Number(process.env.MAX_OUTPUT_TOKENS || 720),
-      temperature: 0.9,
+      max_tokens: isPlainDirection
+        ? Math.min(Number(process.env.MAX_OUTPUT_TOKENS || 720), 520)
+        : Number(process.env.MAX_OUTPUT_TOKENS || 720),
+      temperature: isPlainDirection ? 0.18 : 0.68,
       stream: false,
       thinking: { type: "disabled" },
-    });
+    };
 
-    const data = await response.json();
+    let data: {
+      choices?: Array<{
+        finish_reason?: string;
+        message?: { content?: string };
+      }>;
+      usage?: unknown;
+    } = {};
+    let cleanedResult = "";
 
-    if (!response.ok) {
-      console.error("DeepSeek API error:", data);
-      const apiErrorText = isDaiyu ? "潇湘馆暂未回应，请稍后再试。" : "大儒暂未回应，请稍后再试。";
-      return NextResponse.json(
-        { error: apiErrorText },
-        { status: 502 },
-      );
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const response = await fetchDeepSeekWithRetry(apiKey, requestBody);
+      data = await response.json();
+
+      if (!response.ok) {
+        console.error("DeepSeek API error:", data);
+        return NextResponse.json(
+          {
+            error: isDaiyu
+              ? "潇湘馆暂未回应，请稍后再试。"
+              : "大儒暂未回应，请稍后再试。",
+          },
+          { status: 502 },
+        );
+      }
+
+      const rawText = data?.choices?.[0]?.message?.content?.trim() || "";
+      // 黛玉腔走 DeepSeek 原始输出，不套周礼的 cleanGeneratedText 后处理
+      const generatedText = isDaiyu ? rawText : cleanGeneratedText(rawText);
+      cleanedResult = isPlainDirection
+        ? stripPlainPreamble(generatedText)
+        : generatedText;
+
+      if (
+        data?.choices?.[0]?.finish_reason !== "length" &&
+        !looksIncompleteGeneratedText(
+          cleanedResult,
+          isPlainDirection
+            ? getPlainMinimumResultLength(text)
+            : level === "light"
+              ? 30
+              : 40,
+        )
+      ) {
+        break;
+      }
+
+      await wait(300);
     }
 
-    const cleanedResult = isDaiyu
-      ? data?.choices?.[0]?.message?.content?.trim() || ""
-      : cleanGeneratedText(
-      data?.choices?.[0]?.message?.content?.trim() || "",
-    );
-    const result = normalizeFirstPersonWorkResult(
-      text,
-      normalizeDirectedAttackResult(text, cleanedResult, level),
-      level,
-    );
+    // 黛玉与释礼都直接用清洗后的文本；周礼正向才做人称/攻击归一化
+    const result =
+      isDaiyu || isPlainDirection
+        ? cleanedResult
+        : normalizeFirstPersonWorkResult(
+            text,
+            normalizeDirectedAttackResult(text, cleanedResult, level),
+            level,
+          );
 
-    if (!result) {
-      const errorText = isDaiyu ? "此句尚未成潇湘语，请再试一次。" : "此言尚未成礼，请再试一次。";
+    if (
+      !result ||
+      looksIncompleteGeneratedText(
+        result,
+        isPlainDirection
+          ? getPlainMinimumResultLength(text)
+          : level === "light"
+            ? 30
+            : 40,
+      )
+    ) {
       return NextResponse.json(
-        { error: errorText },
+        {
+          error: isDaiyu
+            ? "此句尚未成潇湘语，请再试一次。"
+            : "此言尚未成礼，请再试一次。",
+        },
         { status: 502 },
       );
     }
 
     return NextResponse.json({
       result,
-      model: isDaiyu ? "潇湘馆" : process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
+      model: isDaiyu
+        ? isDaiyuPlain
+          ? "潇湘馆释读"
+          : "潇湘馆"
+        : process.env.DEEPSEEK_MODEL || "deepseek-v4-flash",
       demo: false,
       usage: data.usage,
       persona,
