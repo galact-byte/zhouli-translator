@@ -460,11 +460,11 @@ export default function Home() {
   const cardImageRef = useRef<HTMLImageElement | null>(null);
 
   const isDaiyu = persona === "daiyu";
-  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颇/释颇
+  // 方向对两个人设都生效：周礼问礼/释礼，黛玉拟颦/释颦
   const isPlainDirection = direction === "to_plain";
   const isDaiyuPlain = isDaiyu && isPlainDirection;
 
-  // 四态派生：黛玉正向 / 黛玉释颇 / 周礼释礼 / 周礼正向
+  // 四态派生：黛玉正向 / 黛玉释颦 / 周礼释礼 / 周礼正向
   const currentModes = isDaiyu ? daiyuModes : modes;
   const currentLevels = isDaiyu ? daiyuLevels : levels;
   const activeModes = isPlainDirection ? plainModes : currentModes;
@@ -484,8 +484,8 @@ export default function Home() {
       : loadingLines.zhouli;
   const activeDirectionVerb = isDaiyu
     ? isPlainDirection
-      ? "释颇"
-      : "拟颇"
+      ? "释颦"
+      : "拟颦"
     : isPlainDirection
       ? "释礼"
       : "问礼";
@@ -560,9 +560,39 @@ export default function Home() {
     };
   }, [persona]);
 
-  // persona 挂到 <html> 上，才能让 body 背景等根级样式命中黛玉配色变量
+  // persona 挂到 <html> 上，才能让 body 背景等根级样式命中黛玉配色变量；
+  // 同时联动浏览器标签页的 <title> 与 favicon，否则切到黛玉后 tab 仍显示“合乎周礼·王字图标”。
   useEffect(() => {
     document.documentElement.setAttribute("data-persona", persona);
+
+    const isDaiyuPersona = persona === "daiyu";
+    document.title = isDaiyuPersona
+      ? "潇湘评｜一语中的，说得透彻"
+      : "合乎周礼｜问礼成文，释礼还意";
+
+    // 黛玉 favicon：冷调黛青底 + “颦”字印（内联 data-URI，无需新增文件）。
+    const daiyuFavicon =
+      "data:image/svg+xml," +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+          '<rect width="64" height="64" rx="14" fill="#3b514a"/>' +
+          '<rect x="7" y="7" width="50" height="50" rx="10" fill="none" stroke="#e7ece6" stroke-width="2"/>' +
+          '<text x="32" y="44" font-family="Songti SC, STSong, SimSun, serif" font-size="34" font-weight="700" text-anchor="middle" fill="#e7ece6">颦</text>' +
+          "</svg>",
+      );
+
+    const iconLink =
+      document.querySelector<HTMLLinkElement>('link[rel="icon"][data-persona-icon]') ??
+      (() => {
+        const link = document.createElement("link");
+        link.rel = "icon";
+        link.type = "image/svg+xml";
+        link.setAttribute("data-persona-icon", "");
+        document.head.appendChild(link);
+        return link;
+      })();
+    iconLink.href = isDaiyuPersona ? daiyuFavicon : "/icon.svg";
+
     return () => {
       document.documentElement.removeAttribute("data-persona");
     };
@@ -770,7 +800,18 @@ export default function Home() {
     const cardMetaLabel = isPlainDirection ? "释法" : "礼制";
     const cardFooterTitle = isPlainDirection ? "合乎周礼 · 释礼署录" : "合乎周礼 · 礼官署录";
     const cardFooterNote = isPlainDirection ? "释出之意，可照常言说" : "生成之文，可入席陈说";
-    const cardDownloadTitle = isPlainDirection ? `释礼-${levelTitle}` : `问礼-${levelTitle}`;
+    const cardDownloadTitle = isDaiyu
+      ? isPlainDirection
+        ? `释颦-${levelTitle}`
+        : `拟颦-${levelTitle}`
+      : isPlainDirection
+        ? `释礼-${levelTitle}`
+        : `问礼-${levelTitle}`;
+    // 黛玉卡片文案：需区分拟颦（正向）/ 释颦（反向），不能写死成正向
+    const daiyuCardSubTitle = isPlainDirection
+      ? "把黛玉体，翻回直白人话"
+      : "把寻常的话，说得一针见血";
+    const daiyuCardMainTitle = isPlainDirection ? "释颦还意" : "言之如匕";
 
     function drawPaperGrain() {
       ctx.save();
@@ -812,7 +853,8 @@ export default function Home() {
 
     function drawSeal(x: number, y: number, size: number, text: string) {
       ctx.save();
-      ctx.fillStyle = "#9e3228";
+      // 印章底色随人设：黛玉黛青、周礼朱砂（“朱砂归周礼，黛青归黛玉”）
+      ctx.fillStyle = isDaiyuCard ? "#45605a" : "#9e3228";
       ctx.fillRect(x, y, size, size);
       ctx.strokeStyle = "rgba(253, 226, 190, 0.8)";
       ctx.lineWidth = 2;
@@ -983,7 +1025,6 @@ export default function Home() {
     ctx.lineTo(textX - 34, bodyTop + panelHeight - 78);
     ctx.stroke();
 
-    const sealColor = isDaiyuCard ? "#45605a" : "#9e3228";
     drawSeal(106, 92, 104, isDaiyuCard ? "颦" : "礼");
 
     ctx.textAlign = "left";
@@ -993,7 +1034,7 @@ export default function Home() {
     ctx.fillText(isDaiyuCard ? "潇湘评" : "合乎周礼", 238, 137);
     ctx.fillStyle = "#7c6d59";
     ctx.font = '26px "Songti SC", "STSong", serif';
-    ctx.fillText(isDaiyuCard ? "把寻常的话，说得一针见血" : cardSubTitle, 242, 183);
+    ctx.fillText(isDaiyuCard ? daiyuCardSubTitle : cardSubTitle, 242, 183);
     ctx.fillStyle = isDaiyuCard ? "rgba(69, 96, 90, 0.86)" : "rgba(136, 48, 39, 0.86)";
     ctx.font = '600 15px "PingFang SC", sans-serif';
     ctx.letterSpacing = "0.12em";
@@ -1001,7 +1042,7 @@ export default function Home() {
     ctx.letterSpacing = "0";
 
     drawVerticalText(
-      isDaiyuCard ? "言之如匕" : cardMainTitle,
+      isDaiyuCard ? daiyuCardMainTitle : cardMainTitle,
       width - 124,
       92,
       34,
@@ -1035,7 +1076,7 @@ export default function Home() {
           const [firstCharacter = "", ...restCharacters] = Array.from(line);
 
           ctx.save();
-          ctx.fillStyle = "#9e3228";
+          ctx.fillStyle = isDaiyuCard ? "#45605a" : "#9e3228";
           ctx.font = '46px "Songti SC", serif';
           ctx.fillText("「", textX - 48, y - 5);
           ctx.font = firstCharacterFont;
@@ -1073,7 +1114,7 @@ export default function Home() {
     ctx.fillStyle = isDaiyuCard ? "#4d605a" : "#9e3228";
     ctx.font = '600 25px "Songti SC", serif';
     ctx.textAlign = "left";
-    ctx.fillText(`${isDaiyuCard ? "语式" : cardMetaLabel} · ${isDaiyuCard ? selectedMode.title : cardStyleTitle} · ${levelTitle}`, 112, height - 118);
+    ctx.fillText(`${isDaiyuCard ? "语式" : cardMetaLabel} · ${cardStyleTitle} · ${levelTitle}`, 112, height - 118);
     ctx.fillStyle = "#7a6d5b";
     ctx.font = '22px "Songti SC", serif';
     ctx.fillText(isDaiyuCard ? "非关风月，只问真心" : isPlainDirection ? "礼文既释，原意可明" : "一言既出，众贤共阅", 112, height - 80);
@@ -1209,8 +1250,8 @@ export default function Home() {
           <div className="translator-panel input-panel">
             <div className="panel-heading">
               <div>
-                <span className="panel-label">{isPlainDirection ? "礼文" : "原言"}</span>
-                <h3>{isPlainDirection ? "哪段礼法太绕？" : "你本来想说什么？"}</h3>
+                <span className="panel-label">{isPlainDirection ? (isDaiyu ? "颦语" : "礼文") : "原言"}</span>
+                <h3>{isPlainDirection ? (isDaiyu ? "哪句绕了弯子？" : "哪段礼法太绕？") : "你本来想说什么？"}</h3>
               </div>
               <span className={`character-count ${text.length > inputLimit - 20 ? "warning" : ""}`}>
                 {text.length} / {inputLimit}
@@ -1377,7 +1418,7 @@ export default function Home() {
                 {loading
                   ? activeLoadingLines[loadingIndex]
                   : isDaiyuPlain
-                    ? "请潇湘馆释颇"
+                    ? "请潇湘馆释颦"
                     : isDaiyu
                       ? "请潇湘馆制语"
                       : isPlainDirection
@@ -1402,7 +1443,7 @@ export default function Home() {
           >
             <div className="result-topline">
               <div>
-                <span className="panel-label inverse">{isDaiyuPlain ? "释颇" : isDaiyu ? "潇湘" : isPlainDirection ? "释礼" : "成礼"}</span>
+                <span className="panel-label inverse">{isDaiyuPlain ? "释颦" : isDaiyu ? "潇湘" : isPlainDirection ? "释礼" : "成礼"}</span>
                 <span className="result-style">
                   {isPlainDirection ? selectedPlainMode.title : selectedMode.title} ·{" "}
                   {activeLevels.find((item) => item.id === level)?.title}
@@ -1450,10 +1491,10 @@ export default function Home() {
                     <span>
                       近10分钟还可{activeDirectionVerb} {remaining} 次
                       {dailyRemaining !== null
-                        ? ` · 今日还可${isPlainDirection ? "释礼" : "问礼"} ${dailyRemaining} 次`
+                        ? ` · 今日还可${activeDirectionVerb} ${dailyRemaining} 次`
                         : ""}
                       {retryAfterSeconds !== null
-                        ? ` · 约 ${Math.ceil(retryAfterSeconds / 60)} 分钟后再${isPlainDirection ? "释礼" : "问礼"}`
+                        ? ` · 约 ${Math.ceil(retryAfterSeconds / 60)} 分钟后再${activeDirectionVerb}`
                         : ""}
                     </span>
                   )}
@@ -1463,15 +1504,15 @@ export default function Home() {
                   <a href={originalVideoUrl} target="_blank" rel="noreferrer">
                     原视频
                   </a>{" "}
-                  赐一赞，以续礼官香火。
+                  赐一赞，{isDaiyu ? "也算不负这一番心思。" : "以续礼官香火。"}
                 </p>
               </>
             ) : (
               <div className="empty-result">
-                <span className="empty-glyph">{isDaiyu ? "颇" : "礼"}</span>
+                <span className="empty-glyph">{isDaiyu ? "颦" : "礼"}</span>
                 <p>
                   {isDaiyuPlain
-                    ? "颇未释，意未明"
+                    ? "颦未释，意未明"
                     : isDaiyu
                       ? "语未出，情未显"
                       : isPlainDirection
@@ -1643,7 +1684,9 @@ export default function Home() {
                   <h4>最快用法：复制全文</h4>
 	                  <p>
 	                    点击左侧“一键复制 Skill 全文”，直接粘贴进 AI
-	                    的聊天框。AI 读完后，你可发白话请它问礼，也可发周礼体请它释礼。
+	                    的聊天框。{isDaiyu
+	                      ? "AI 读完后，你可发白话请它拟颦，也可发黛玉体请它释颦。"
+	                      : "AI 读完后，你可发白话请它问礼，也可发周礼体请它释礼。"}
 	                  </p>
                 </div>
               </li>
@@ -1651,7 +1694,7 @@ export default function Home() {
                 <span>二</span>
                 <div>
                   <h4>正式安装：下载并解压</h4>
-                  <p>也可以下载 ZIP，解压后保留完整的 <code>speak-zhouli</code> 文件夹。</p>
+                  <p>也可以下载 ZIP，解压后保留完整的 <code>{isDaiyu ? "speak-daiyu" : "speak-zhouli"}</code> 文件夹。</p>
                 </div>
               </li>
               <li>
@@ -1659,7 +1702,7 @@ export default function Home() {
                 <div>
                   <h4>放入 Skill 目录</h4>
                   <p>Codex（macOS / Linux）</p>
-                  <code>~/.codex/skills/speak-zhouli</code>
+                  <code>{isDaiyu ? "~/.codex/skills/speak-daiyu" : "~/.codex/skills/speak-zhouli"}</code>
                   <p>Codex（Windows）</p>
                   <code>{isDaiyu ? "%USERPROFILE%\.codex\skills\speak-daiyu" : "%USERPROFILE%\.codex\skills\speak-zhouli"}</code>
                 </div>
@@ -1797,7 +1840,7 @@ export default function Home() {
             href={originalVideoUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label={isDaiyu ? "合乎周礼 B 站原视频" : "合乎周礼 B 站原视频"}
+            aria-label={isDaiyu ? "潇湘评 B 站原视频" : "合乎周礼 B 站原视频"}
           >
             B站原视频
           </a>
@@ -1805,7 +1848,7 @@ export default function Home() {
             href={githubUrl}
             target="_blank"
             rel="noreferrer"
-            aria-label={isDaiyu ? "合乎周礼官方 GitHub 仓库" : "合乎周礼官方 GitHub 仓库"}
+            aria-label={isDaiyu ? "潇湘评官方 GitHub 仓库" : "合乎周礼官方 GitHub 仓库"}
           >
             官方开源仓库
           </a>
