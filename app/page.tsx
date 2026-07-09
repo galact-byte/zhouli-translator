@@ -1604,12 +1604,12 @@ export default function Home() {
 
               <a
                 className="skill-download"
-                href="/downloads/speak-zhouli-skill.zip"
+                href="/downloads/speak-zhouli-SKILL.md"
                 download
               >
 	                <span>
 	                  <strong>下载问礼释礼 Skill</strong>
-	                  <small>ZIP · 解压即可安装</small>
+	                  <small>Markdown · 可直接粘贴使用</small>
 	                </span>
                 <Icon name="download" />
               </a>
@@ -1650,12 +1650,12 @@ export default function Home() {
             <div className="skill-actions">
               <a
                 className="skill-download"
-                href="/downloads/speak-daiyu-skill.zip"
+                href="/downloads/speak-daiyu-SKILL.md"
                 download
               >
                 <span>
                   <strong>下载林黛玉腔 Skill</strong>
-                  <small>ZIP · 解压即可安装</small>
+                  <small>Markdown · 可直接粘贴使用</small>
                 </span>
                 <Icon name="download" />
               </a>
@@ -1693,8 +1693,8 @@ export default function Home() {
               <li>
                 <span>二</span>
                 <div>
-                  <h4>正式安装：下载并解压</h4>
-                  <p>也可以下载 ZIP，解压后保留完整的 <code>{isDaiyu ? "speak-daiyu" : "speak-zhouli"}</code> 文件夹。</p>
+                  <h4>正式安装：保存 Skill 文件</h4>
+                  <p>也可以下载 Markdown，保存为 <code>SKILL.md</code>，再放入对应的 <code>{isDaiyu ? "speak-daiyu" : "speak-zhouli"}</code> 文件夹。</p>
                 </div>
               </li>
               <li>
