@@ -13,3 +13,11 @@ yarn-error.log*
 .DS_Store
 *.tsbuildinfo
 test-runs/
+
+# AI assistant configs & local state (do not push to remote)
+CLAUDE.md
+GEMINI.md
+AGENTS.md
+.claude/
+.omc/
+.pi/
